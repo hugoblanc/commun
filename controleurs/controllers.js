@@ -53,42 +53,85 @@ angular.module('starter.controllers', ["ui.router", ])
 	}
 
 	//Préparer la commande anvant l'envoi en base (check quoi envoyer)
-	function preparCommande(){
-		var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
+	// function preparCommande(){
+	// 	var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
+		
+	// 		var newCommande = {
+	// 		"user": $rootScope.user.id,
+	// 		"date": currentCommande.date,
+	// 		"statut": "Envoyé"
+	// 	};
+	// 	return currentCommande;
+
+	// }
+
+	function controleCommande(currentCommande){
+		
+		var resultControl = {"plats": false,
+							 "boissons": false,
+							 "desserts": false};
+
 		if(currentCommande.boissons.length > 0 
 			|| currentCommande.plats.length > 0 
 			|| currentCommande.desserts){
-			
+			if(currentCommande.boissons.length > 0){
+				resultControl.boissons = true;
+			}
+			if(currentCommande.plats.length > 0){
+				resultControl.plats = true
+			}
+			if(currentCommande.desserts.length > 0){
+				resultControl.desserts = true;
+			}
+			return resultControl;
 		}
-
-		/*
-			var newCommande = {
-			"user": $rootScope.user.id,
-			"date": currentCommande.date,
-			"statut": "Envoyé"
-		};*/
-
-		return currentCommande;
-
 	}
 
-	function preparBoissons(boissons){
-		var newCommande = {
-			"user": userId,
-			"date": (new Date()),
-			"statut": "Non validé"
+	function envoiCommande(currentCommande){
+		/*Méthode qui envoi les commande à la partie service
+		fonctionne avec une fonction controleCOmmande qui fabrique un tableau de boolean
+		en fonction de la présence ou non d'éléments dans les tableaux: 
+		-boissons
+		-plats
+		-dessert*/
+
+		CommandeService.create(currentCommande).then(function(resultCommande){
+			$rootScope.user.currentCommande = resultCommande.data.__metadata.id;
+			var controlMethode = controleCommande(currentCommande);
+			if(controlMethode.boissons == true){
+				envoiBoissons(currentCommande.boissons, $rootScope.user.currentCommande);
+			}
+			if(controlMethode.desserts == true){
+				
+			}
+			if(controlMethode.plats == true){
+				
+			}
+		});
+	}
+
+	function envoiBoissons(boissons, commandeId){
+
+		var newBoisson = {
+			"name": boissons.name,
+			"prix": boissons.prix,
+			"commande": commandeId
 		};
+
+
 
 
 	}
 
 	function submit(){
+		/*Méthode fixé au bouton valider elle envoi la commande stocké dans la rootScope
+		elle appel pour cela envoi commande qui appel:
+		- envoiBoissons
+		- envoiPlats
+		- envoiDesserts*/
 
-
-	    CommandeService.create(preparCommande()).then(function(result){
-    	console.log("correcte ! ");
-    	$rootScope.user.currentCommande = result.data.__metadata.id
-    	});
+		var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
+	    envoiCommande(currentCommande);
 	}
 
 	$scope.commande.creerCommande = createCommande($rootScope.user.id);
