@@ -1,6 +1,6 @@
 
 
-    app.service('CommandeBoissonService', function ($http, Backand) {
+    app.service('CommandeBoissonService', function ($http, Backand, $q) {
         var service = this,
             baseUrl = '/1/objects/',
             objectName = 'boissons/';
@@ -22,8 +22,13 @@
         };
 
         service.create = function (object) {
-            
-            return $http.post(getUrl(), object);
+            var deferred = $q.defer();
+            $http.post(getUrl(), object).then(function successCallback(resultat){
+                deferred.resolve(resultat);
+            }, function errorCallback(response) {
+                deferred.reject(response);
+            });
+            return deferred.promise;
         };
 
         service.update = function (id, object) {
@@ -33,6 +38,17 @@
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
         };
+
+        service.prom = function(condition) {
+        var deferred = $q.defer();
+            if(condition) {
+                deferred.resolve("Success");
+            } else {
+                deferred.reject("Error");
+            }
+
+            return deferred.promise;
+        }
     })
 
       app.service('BoissonService', function ($http, Backand) {

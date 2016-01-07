@@ -11,29 +11,51 @@ angular.module('starter.controllers', ["ui.router", ])
 	}
 })
 
-.controller('MenuCtrl', function($scope, $state) {
-	var test = 25;
-	function changeView(){
-		$state.go('tab.account');
+
+.controller('MenuCtrl', function($scope, $state, $rootScope) {
+
+	$scope.nouvelleCommande = function(){
+		
+		//Quand l'utilisateur clique sur nouvelle commande on fabrique un objet vide et on incrémente l'id local de la commande
+
+		$rootScope.user.commandes.push( {"plats":[],
+										"boissons": [],
+										"desserts": [],
+										"statut": "Non validé",
+										"date": (new Date())});
+
+		$rootScope.user.currentCommande = $rootScope.user.currentCommande +1;
+
+		//Et on navigue vers la page souhaité
+		$state.go('tab.commande');
 	}
 })
 
-.controller('CommandeCtrl', function($scope, $state, $rootScope, CommandeService) {
+.controller('CommandeCtrl', function($scope, $q, $state, $rootScope, CommandeService, CommandeBoissonService) {
 	$scope.commande = {};
 	$scope.user.nbBoisson = 0;
 	$scope.user.nbPlats = 0;
 	$scope.user.nbDesserts = 0;
 
 
+	//
 	function classes(){
-		if($rootScope.user.commandes != null && $rootScope.user.commandes[0].boissons != undefined && $rootScope.user.commandes[0].boissons.length > 0){
-			$scope.user.nbBoisson = $rootScope.user.commandes[0].boissons.length;
+		if($rootScope.user.commandes != null &&
+		 $rootScope.user.currentCommande >=0 &&
+		  $rootScope.user.commandes[$rootScope.user.currentCommande].boissons != undefined &&
+		   $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length > 0){
+
+			$scope.user.nbBoisson = $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length;
 			return{'isSelected' :true};
 		} else {
 			return {'isSelected': false};
 		}
 	};
 
+
+
+
+	//J'ai transféré ce code dans la page précédente (menu) a voir si il faut garder la fonction ou pas ...
 	//Crer en rootScope un objet qui correspond à la commande actuelle
 	function createCommande(userId){
 		/*******Schema NoSQL*********
@@ -44,12 +66,7 @@ angular.module('starter.controllers', ["ui.router", ])
 		};
 
 		*/
-		$rootScope.user.commandes.push( {"plats":[],
-										"boissons": [],
-										"desserts": [],
-										"statut": "Non validé",
-										"date": (new Date())});
-		$rootScope.user.currentCommande = $rootScope.user.currentCommande +1;
+
 	}
 
 	//Préparer la commande anvant l'envoi en base (check quoi envoyer)
@@ -65,8 +82,11 @@ angular.module('starter.controllers', ["ui.router", ])
 
 	// }
 
+
+
 	function controleCommande(currentCommande){
 		
+		//fabrique un tableau qui contient les informations sur la présence ou non des éléments si dessous
 		var resultControl = {"plats": false,
 							 "boissons": false,
 							 "desserts": false};
@@ -87,6 +107,34 @@ angular.module('starter.controllers', ["ui.router", ])
 		}
 	}
 
+
+
+	function envoiBoissons(boissons, commandeId){
+
+		/********Forme de l'objet a envoyer a la base ********
+
+		var newBoisson = { 
+			"name": boissons.name,
+			"prix": boissons.prix,
+			"commande": commandeId
+		};*/
+
+
+		for(var i =0; i < boissons.length; i++){
+
+			// On assigne l'ID de la commande créé en base, cette id est utilisé pour retrouvé a qui appartient la boisson dans la base
+			boissons[i].commande = commandeId; 
+
+
+			//Block ci dessous à décommenter pour envoyer les boissons pour de vrai, fanant de supprimer les objet un par un dans la base
+			/*CommandeBoissonService.create(boissons[i]).then(function(resultatBoissons){
+				console.log("n°"+(i+1));
+				//dfd.resolve(resultatBoissons);
+			});*/
+		}
+
+	}
+
 	function envoiCommande(currentCommande){
 		/*Méthode qui envoi les commande à la partie service
 		fonctionne avec une fonction controleCOmmande qui fabrique un tableau de boolean
@@ -95,32 +143,27 @@ angular.module('starter.controllers', ["ui.router", ])
 		-plats
 		-dessert*/
 
-		CommandeService.create(currentCommande).then(function(resultCommande){
-			$rootScope.user.currentCommande = resultCommande.data.__metadata.id;
-			var controlMethode = controleCommande(currentCommande);
+		CommandeService.create(currentCommande).then(function(resultCommande){/*Si l'envoi dans la base c'est bien passé 
+			alors on envoi le reste (boissons, desserts, plats)*/
+
+
+			$rootScope.user.IDcurrentCommande = resultCommande.data.__metadata.id; // récupération de l'id de la commande qui vient d'être crée
+
+			var controlMethode = controleCommande(currentCommande);	//On check quels éléments sont présent dans notre commande: boissons ? desserts ? plats ? 
+			//Objet JSON retourné avec trois champs boolean : boissons desserts, et plats
+
 			if(controlMethode.boissons == true){
-				envoiBoissons(currentCommande.boissons, $rootScope.user.currentCommande);
+				envoiBoissons(currentCommande.boissons, $rootScope.user.IDcurrentCommande);/*.then(function(retourEnvoiBoissons){
+					console.log("L'envoi des boissons est une reussite");
+				});*/
 			}
 			if(controlMethode.desserts == true){
-				
+				//Creer envoiDesserts
 			}
 			if(controlMethode.plats == true){
-				
+				//creer envoiPlats
 			}
 		});
-	}
-
-	function envoiBoissons(boissons, commandeId){
-
-		var newBoisson = {
-			"name": boissons.name,
-			"prix": boissons.prix,
-			"commande": commandeId
-		};
-
-
-
-
 	}
 
 	function submit(){
@@ -132,11 +175,12 @@ angular.module('starter.controllers', ["ui.router", ])
 
 		var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
 	    envoiCommande(currentCommande);
+	    $state.go('tab.menu', {}, {reload: true});
 	}
 
-	$scope.commande.creerCommande = createCommande($rootScope.user.id);
-	$scope.commande.submit = submit;
-	$scope.classe = classes;
+	$scope.commande.creerCommande = createCommande($rootScope.user.id); //tranféré dans la page précédente (menu) car plus logique de créer la commande au moment de l'appuie sur "nouvelle commande"
+	$scope.commande.submit = submit; // lors du clique sur le boutton valider
+	$scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
 })
 
 
