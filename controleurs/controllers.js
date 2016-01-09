@@ -141,7 +141,11 @@ angular.module('starter.controllers', ["ui.router", ])
 		en fonction de la présence ou non d'éléments dans les tableaux: 
 		-boissons
 		-plats
-		-dessert*/
+		-dessert
+
+
+
+		*/
 
 		CommandeService.create(currentCommande).then(function(resultCommande){/*Si l'envoi dans la base c'est bien passé 
 			alors on envoi le reste (boissons, desserts, plats)*/
