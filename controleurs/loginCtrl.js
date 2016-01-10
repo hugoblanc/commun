@@ -25,9 +25,9 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, Connexion, $http,
                                 //$rootScope.user.id = $scope.getUserId(user.pseudo);
                                 $scope.getUserId(user.pseudo);
                                 $scope.erreur = "";
-//                                window.localStorage.setItem("user", JSON.stringify(user));
-//                                window.localStorage.setItem("token", JSON.stringify(result));
-                                $state.go('accueil');
+                                window.localStorage.setItem("user", JSON.stringify(user));
+                                window.localStorage.setItem("token", JSON.stringify(result));
+                                $state.go('tab.accueil');
                             },
                             function (data) {
                                 if(data.error === "invalid_grant"){
@@ -90,10 +90,6 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, Connexion, $http,
        $state.go("resetPassword");
     };
     
-    
-
-      window.localStorage.setItem("user", JSON.stringify(user));
-      window.localStorage.setItem("token", JSON.stringify(result));
 
     $scope.login = login;
     $scope.signup = signup;
