@@ -1,46 +1,40 @@
-  app.service('Friends', function() {
 
-  var friends = [{
-    id: 0,
-    name: 'Ben Sparrow',
-    lastText: 'You on your way?',
-    face: 'img/ben.png'
-  }, {
-    id: 1,
-    name: 'Max Lynx',
-    lastText: 'Hey, it\'s me',
-    face: 'img/max.png'
-  }, {
-    id: 2,
-    name: 'Adam Bradleyson',
-    lastText: 'I should buy a boat',
-    face: 'img/adam.jpg'
-  }, {
-    id: 3,
-    name: 'Perry Governor',
-    lastText: 'Look at my mukluks!',
-    face: 'img/perry.png'
-  }, {
-    id: 4,
-    name: 'Mike Harrington',
-    lastText: 'This is wicked good ice cream.',
-    face: 'img/mike.png'
-  }];
+app.service('PlatsService', function ($http, Backand) {
+    var service = this,
+        baseUrl = '/1/objects/',
+        objectName = 'plats/';
 
-  return {
-    all: function() {
-      return friends;
-    },
-    remove: function(friend) {
-      friends.splice(friends.indexOf(friend), 1);
-    },
-    get: function(friendId) {
-      for (var i = 0; i < friends.length; i++) {
-        if (friends[i].id === parseInt(friendId)) {
-          return friends[i];
-        }
-      }
-      return null;
+    function getUrl() {
+        return Backand.getApiUrl() + baseUrl + objectName;
     }
-  };
+
+    function getUrlForId(id) {
+        return getUrl() + id;
+    }
+
+    service.all = function () {
+        return $http.get(getUrl());
+    };
+
+    service.fetch = function (id) {
+        return $http.get(getUrlForId(id));
+    };
+
+    service.create = function (object) {
+        
+        return $http.post(getUrl(), object);
+    };
+
+    service.update = function (id, object) {
+        return $http.put(getUrlForId(id), object);
+    };
+
+    service.delete = function (id) {
+        return $http.delete(getUrlForId(id));
+    };
+
+
+    service.updateBase = function(nameBase){
+        objectName = nameBase + '/';
+    }
 });

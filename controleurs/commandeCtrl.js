@@ -95,10 +95,10 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 
 
 			//Block ci dessous à décommenter pour envoyer les boissons pour de vrai, fanant de supprimer les objet un par un dans la base
-			/*CommandeBoissonService.create(boissons[i]).then(function(resultatBoissons){
+			CommandeBoissonService.create(boissons[i]).then(function(resultatBoissons){
 				console.log("n°"+(i+1));
 				//dfd.resolve(resultatBoissons);
-			});*/
+			});
 		}
 
 	}
@@ -147,7 +147,14 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 
 		var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
 	    envoiCommande(currentCommande);
-	    $state.go('tab.menu', {}, {reload: true});
+	    $state.go('tab.menu');
+	}
+
+	function annuler(){
+
+		$rootScope.user.commandes.pop();
+
+	    $state.go('tab.menu');
 	}
 
 	$scope.commande.creerCommande = createCommande($rootScope.user.id); //tranféré dans la page précédente (menu) car plus logique de créer la commande au moment de l'appuie sur "nouvelle commande"
