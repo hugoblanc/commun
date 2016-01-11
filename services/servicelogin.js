@@ -1,4 +1,4 @@
-app.service('Connexion', function (Backand, $http) {
+app.service('ServiceLogin', function (Backand, $http) {
     // Might use a resource here that returns a JSON array
     var self = this,
             baseUrl = '/1/objects/',
@@ -49,6 +49,26 @@ app.service('Connexion', function (Backand, $http) {
         Backand.signout().then(function () {
             angular.copy({}, self.currentUser);
         });
+    };
+
+    self.update = function (id, object) {
+        return $http.put(getUrlForId(id), object);
+    };
+
+    self.getUserInfos = function(email){
+        return $http({
+            method: 'GET',
+            url: Backand.getApiUrl() + '/1/query/data/GetUser',
+            params: {
+                parameters: {
+                    email: email
+                }
+            }
+        });
+    };
+    
+    self.getUserDetails = function (id){
+        return Backand.getUserDetails();
     };
 
 
