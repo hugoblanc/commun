@@ -1,33 +1,40 @@
-  app.service('ItemsModel', function ($http, Backand) {
-        var service = this,
-            baseUrl = '/1/objects/',
-            objectName = 'items/';
+  app.controller('BoissonCtrl', function($scope, $stateParams, $state, BoissonService, CommandeBoissonService, $rootScope) {
+	$scope.boisson ={};
+	var userStocked =  JSON.parse(window.localStorage.getItem("currentUser"));
+	
+		function boissonsChecked(boissons){
+			var result = [];
+			for(var i = 0; i < boissons.length; i++){
+        		if(boissons[i].isChecked){
+        			result.push(boissons[i]);
+        		}
+        	}
+        	return result;
+		}
 
-        function getUrl() {
-            return Backand.getApiUrl() + baseUrl + objectName;
+        function getAll() {
+            BoissonService.all()
+                .then(function (result) {
+                    $scope.boisson.boissons = result.data.data;
+                }, function(raison) {
+				  console.log('In your face brah !');
+				});
+            }
+
+        function submit(boissons){
+        	var boissonsSelected = boissonsChecked(boissons.boissons);
+
+
+        	$rootScope.user.commandes[$rootScope.user.currentCommande].boissons = boissonsSelected;
+        	$state.go('tab.commande');
+
+
+        	// CommandeBoissonService.create(boissonsSelected).then(function(result){
+        	// 	console.log("correcte ! ");
+        	// });
         }
 
-        function getUrlForId(id) {
-            return getUrl() + id;
-        }
+        $scope.boisson.submit = submit;
+        $scope.boisson.getAll = getAll();
 
-        service.all = function () {
-            return $http.get(getUrl());
-        };
-
-        service.fetch = function (id) {
-            return $http.get(getUrlForId(id));
-        };
-
-        service.create = function (object) {
-            return $http.post(getUrl(), object);
-        };
-
-        service.update = function (id, object) {
-            return $http.put(getUrlForId(id), object);
-        };
-
-        service.delete = function (id) {
-            return $http.delete(getUrlForId(id));
-        };
-    })
+});
