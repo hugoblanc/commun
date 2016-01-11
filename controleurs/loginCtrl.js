@@ -19,7 +19,6 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin) {
             ServiceLogin.signin(user.pseudo, user.mdp)
                     .then(
                             function (result) {
-<<<<<<< HEAD
                                 //stoker les infos du user en local
                                 currentUser = {};
                                 currentUser.fullName = result.fullName;
@@ -44,14 +43,6 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin) {
                                 }, function (data) {
                                     $scope.erreur = "Erreur de connexion à la base";
                                 });
-=======
-                                //$rootScope.user.id = $scope.getUserId(user.pseudo);
-                                $scope.getUserId(user.pseudo);
-                                $scope.erreur = "";
-                                window.localStorage.setItem("user", JSON.stringify(user));
-                                window.localStorage.setItem("token", JSON.stringify(result));
-                                $state.go('tab.accueil');
->>>>>>> 2fa8e02978ee8aaf8bcbf8b52a2d00be5947ddc8
                             },
                             function (data) {
                                 if (data.error === "invalid_grant") {
@@ -98,13 +89,6 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin) {
     $scope.goToResetPassword = function () {
         $state.go("resetPassword");
     };
-<<<<<<< HEAD
-
-
-
-=======
-    
->>>>>>> 2fa8e02978ee8aaf8bcbf8b52a2d00be5947ddc8
 
     $scope.login = login;
     $scope.signup = signup;

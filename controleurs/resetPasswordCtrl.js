@@ -8,9 +8,9 @@
      * Backand reset password controller - request change password link to be sent via email
      */
 
-app.controller('resetPasswordCtrl', ['Connexion', '$location', '$state', ResetPasswordCtrl]);
+app.controller('resetPasswordCtrl', ['ServiceLogin', '$location', '$state', ResetPasswordCtrl]);
 
-    function ResetPasswordCtrl(Connexion, $location, $state) {
+    function ResetPasswordCtrl(ServiceLogin, $location, $state) {
         var self = this;
 
         function init() {
@@ -23,7 +23,7 @@ app.controller('resetPasswordCtrl', ['Connexion', '$location', '$state', ResetPa
             self.success = null;
 
             if (self.sendEmail) {
-                Connexion.requestResetPassword(self.username)
+                ServiceLogin.requestResetPassword(self.username)
                     .then(
                     function () {
                         self.success = 'Please check your email to continue';
@@ -45,7 +45,7 @@ app.controller('resetPasswordCtrl', ['Connexion', '$location', '$state', ResetPa
                     self.error = 'Les mots de passes sont différents';
                 }
                 else
-                    Connexion.resetPassword(self.newPassword, self.token)
+                    ServiceLogin.resetPassword(self.newPassword, self.token)
                         .then(
                         function () {
                             $state.go('signin');
