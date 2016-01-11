@@ -2,7 +2,15 @@ angular.module('starter.controllers', ['ui.router'])
 
 
     .controller('AccueilCtrl', function ($scope, $state, MessagesService) {
-        $scope.accueil = {};
+        
+    
+        function init(){
+            $scope.accueil = {};
+            $scope.user = JSON.parse(window.localStorage.getItem("currentUser"));
+            if($scope.user.role === "Admin"){
+                $scope.admin = true;
+            }
+        }
         function getAll() {
             MessagesService.all()
                     .then(function (result) {
@@ -18,6 +26,23 @@ angular.module('starter.controllers', ['ui.router'])
         $scope.goToParametres = function () {
             $state.go("parametres");
         };
+        
+        $scope.goToAdmin = function(){
+//           ServiceLogin.getUserDetails()
+//                .then(function (data) {
+//                    if(data.role === "Admin"){
+//                        $state.go("admin");
+//                    }
+//                    else{
+//                        $scope.error = "Vous n'avez pas le droit d'y acceder";
+//                    }
+//                },function(){
+//                    $scope.error = "Erreur de connexion à la base";
+//                });
+            $state.go("admin");
+        };
+        
+        init();
     })
 
     .controller('EventsCtrl', function ($scope, $state, EventsService) {
