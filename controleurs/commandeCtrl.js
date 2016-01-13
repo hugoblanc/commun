@@ -1,5 +1,5 @@
   
-app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, CommandeService, CommandeBoissonService) {
+app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, CommandeService, CommandeBoissonService,PlatsService, SauceCommandeService) {
 	$scope.commande = {};
 	$scope.user.nbBoisson = 0;
 	$scope.user.nbPlats = 0;
@@ -103,6 +103,65 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 
 	}
 
+	function envoiPlats(plats, commandeId){
+		/* Model du format du plat
+
+		{
+			"name": "string",
+			"prix": "number",
+			"commande": "parent"
+		}   */
+
+		var plat = {
+			"name": "string",
+			"prix": "number",
+			"commande": commandeId
+		};
+
+
+
+		for(var i=0; i<plats.length ; i++){
+			plats[i].commande = commandeId;
+			plats[i].localId = i;
+			PlatsService.create(plats[i]).then(function(resultatPlat){
+
+				var idCurrentPlat = resultatPlat.data.__metadata.id;
+				var idLocalCurrentPlat = resultatPlat.config.data.localId;
+
+				//resultatPlat.config.data.type
+
+				if(resultatPlat.config.data.type == "sandwich"){
+					envoiIngredients(plats[idLocalCurrentPlat],
+					 commandeId,
+					  idCurrentPlat);
+				}
+				//envoiIngredients()
+				console.log("That's a test bro");
+			});
+		}
+
+	}
+
+	function envoiIngredients(sandwich, commandeId, platId){
+		/* Model de donné pour sauce
+		{
+			"name": "string",
+			"plat": "parent"
+		}*/
+
+			var sauces = sandwich.sauce;
+
+
+			if(sandwich.type != undefined && sandwich.type == "sandwich"){
+				for(var j =0; j < sauces.length ; j++){
+					sauces[j].plat = platId;
+					SauceCommandeService.create(sauces[j]).then(function(resultIngredients){
+						console.log("We're in bro ! ");
+					})
+				}
+			} 
+	}
+
 	function envoiCommande(currentCommande){
 		/*Méthode qui envoi les commande à la partie service
 		fonctionne avec une fonction controleCOmmande qui fabrique un tableau de boolean
@@ -110,10 +169,8 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 		-boissons
 		-plats
 		-dessert
-
-
-
 		*/
+
 
 		CommandeService.create(currentCommande).then(function(resultCommande){/*Si l'envoi dans la base c'est bien passé 
 			alors on envoi le reste (boissons, desserts, plats)*/
@@ -133,7 +190,7 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 				//Creer envoiDesserts
 			}
 			if(controlMethode.plats == true){
-				//creer envoiPlats
+				envoiPlats(currentCommande.plats, $rootScope.user.IDcurrentCommande);
 			}
 		});
 	}

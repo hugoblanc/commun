@@ -1,4 +1,4 @@
-  app.controller('PlatsCtrl', function($scope, $state, $rootScope, PlatsService) {
+  app.controller('PlatsCtrl', function($scope, $state, $rootScope, PlatPrepService, SaucesService) {
 
   	$scope.plats = {};
   	$scope.choix = {}; // Tout les choix possible sont préchargé ici
@@ -21,8 +21,8 @@
 	}
 
 	function getAllSauces(){
-		PlatsService.updateBase("listesauces");
-		PlatsService.all().then(function(resultatSauces){
+
+		SaucesService.all().then(function(resultatSauces){
 			$scope.choix.sauces = resultatSauces.data.data;
 		});
 	}
@@ -32,13 +32,53 @@
 	}
 
 	function getAllPlatsPrepare(){
-		PlatsService.updateBase("listeplatsprepare");
-		PlatsService.all().then(function(resultatPlatsPrepare){
+		PlatPrepService.all().then(function(resultatPlatsPrepare){
 			$scope.choix.platsPrepares = resultatPlatsPrepare.data.data;
 		});
 	}
+
+	function submit(liste, type){
+
+		//On commence par selectionner uniquement les items selectionné
+		var listeItemsSelected = itemsSelected(liste);
+
+		if(type == "sauces"){//Si il s'agit de sauces alors un seul plat est créé
+			$rootScope.user.commandes[$rootScope.user.currentCommande].plats.push({
+				"name":"hotdog",
+				"type":"sandwich",
+				"prix": 1.50,
+				"sauce":listeItemsSelected
+			});
+		} else if (type == "platsPrep"){/* Si il s'agit de plat préparé alors on ajout
+			un plat pour chaque case du tableau plats[]  de rootscope*/
+
+			for(var j = 0 ; j < listeItemsSelected.length ; j++){
+				$rootScope.user.commandes[$rootScope.user.currentCommande].plats.push({
+					"type":"platsPrep",
+					"name": listeItemsSelected[j].name,
+					"prix": listeItemsSelected[j].prix
+				});
+			}
+		}
+
+		$state.go('tab.commande');
+	}
+
+	function itemsSelected(liste){
+		var result = [];
+		for(var i = 0; i < liste.length; i++){
+    		if(liste[i].isChecked){
+    			result.push(liste[i]);
+    		}
+    	}
+    	return result;
+	}
+
+
+
 	
 	$scope.getAllPossibilites = getAllPossibilites();
+	$scope.plats.submit = submit;
 
 
 
