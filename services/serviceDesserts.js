@@ -1,7 +1,8 @@
-  app.service('ItemsModel', function ($http, Backand) {
+  app.service('DessertService', function ($http, Backand) {
         var service = this,
             baseUrl = '/1/objects/',
-            objectName = 'items/';
+            objectName = 'listeDesserts/';
+
 
         function getUrl() {
             return Backand.getApiUrl() + baseUrl + objectName;

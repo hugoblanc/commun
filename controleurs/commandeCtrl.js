@@ -18,6 +18,15 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 		} else {
 			return {'isSelected': false};
 		}
+
+
+	    if ($rootScope.user.commandes[$rootScope.user.currentCommande].desserts != undefined &&
+            $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length > 0) {
+
+	        $scope.user.nbDesserts = $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length;
+	        return { 'dessertSelected': true };
+
+	    } 
 	};
 
 
@@ -61,7 +70,7 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 
 		if(currentCommande.boissons.length > 0 
 			|| currentCommande.plats.length > 0 
-			|| currentCommande.desserts){
+			|| currentCommande.desserts.length > 0){
 			if(currentCommande.boissons.length > 0){
 				resultControl.boissons = true;
 			}
@@ -162,6 +171,15 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 			} 
 	}
 
+
+	function envoiDesserts(desserts, commandeId) {
+
+	    for (var i = 0; i < desserts.length; i++) {
+	        desserts[i].commande = commandeId;
+	    }
+	}
+
+
 	function envoiCommande(currentCommande){
 		/*Méthode qui envoi les commande à la partie service
 		fonctionne avec une fonction controleCOmmande qui fabrique un tableau de boolean
@@ -187,7 +205,7 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 				});*/
 			}
 			if(controlMethode.desserts == true){
-				//Creer envoiDesserts
+				envoiDesserts(currentCommande.desserts, $rootScope.user.IDcurrentCommande);
 			}
 			if(controlMethode.plats == true){
 				envoiPlats(currentCommande.plats, $rootScope.user.IDcurrentCommande);

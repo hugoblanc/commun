@@ -1,33 +1,29 @@
-  app.service('ItemsModel', function ($http, Backand) {
-        var service = this,
-            baseUrl = '/1/objects/',
-            objectName = 'items/';
+app.controller('DessertCtrl', function ($scope, $stateParams, $state, DessertService, $rootScope) {
+    $scope.dessert = {};
+    var userStocked = JSON.parse(window.localStorage.getItem("currentUser"));
 
-        function getUrl() {
-            return Backand.getApiUrl() + baseUrl + objectName;
+    function dessertsChecked(desserts) {
+        var result = [];
+        for (var i = 0; i < desserts.length; i++) {
+            if (desserts[i].isChecked) {
+                result.push(desserts[i]);   
+            }
         }
+        return result;
+    }
 
-        function getUrlForId(id) {
-            return getUrl() + id;
-        }
+    function getAll() {
+        DessertService.all().then(function (result) {
+            $scope.dessert.desserts = result.data.data;
+        });
+    }
 
-        service.all = function () {
-            return $http.get(getUrl());
-        };
+    function submit(desserts) {
+        var dessertsSelected = dessertsChecked(desserts.desserts);
+        $rootScope.user.commandes[$rootScope.user.currentCommande].desserts = dessertsSelected;
+        $state.go('tab.commande');
+    }
 
-        service.fetch = function (id) {
-            return $http.get(getUrlForId(id));
-        };
-
-        service.create = function (object) {
-            return $http.post(getUrl(), object);
-        };
-
-        service.update = function (id, object) {
-            return $http.put(getUrlForId(id), object);
-        };
-
-        service.delete = function (id) {
-            return $http.delete(getUrlForId(id));
-        };
-    })
+    $scope.dessert.submit = submit;
+    $scope.dessert.getAll = getAll();
+});
