@@ -6,7 +6,7 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 	$scope.user.nbDesserts = 0;
 
 
-	//
+
 	function classes(){
 		if($rootScope.user.commandes != null &&
 		 $rootScope.user.currentCommande >=0 &&
@@ -18,16 +18,27 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 		} else {
 			return {'isSelected': false};
 		}
+	}
 
 
-	    if ($rootScope.user.commandes[$rootScope.user.currentCommande].desserts != undefined &&
-            $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length > 0) {
+	// function classes() {
+	//     //if ($rootScope.user.commandes != null && $rootScope.user.currentCommande >= 0) {
+	//     if ($rootScope.user.commandes[$rootScope.user.currentCommande].boissons != undefined &&
+ //            $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length > 0) {
 
-	        $scope.user.nbDesserts = $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length;
-	        return { 'dessertSelected': true };
+	//         $scope.user.nbBoisson = $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length;
+	//         return { 'boissonSelected': true };
 
-	    } 
-	};
+	//     }
+
+	//     if ($rootScope.user.commandes[$rootScope.user.currentCommande].desserts != undefined &&
+ //            $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length > 0) {
+
+	//         $scope.user.nbDesserts = $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length;
+	//         return { 'dessertSelected': true };
+
+	//     } 
+	// };
 
 
 
@@ -178,7 +189,6 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 	        desserts[i].commande = commandeId;
 	    }
 	}
-
 
 	function envoiCommande(currentCommande){
 		/*Méthode qui envoi les commande à la partie service

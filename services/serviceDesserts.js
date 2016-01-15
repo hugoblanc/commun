@@ -3,7 +3,6 @@
             baseUrl = '/1/objects/',
             objectName = 'listeDesserts/';
 
-
         function getUrl() {
             return Backand.getApiUrl() + baseUrl + objectName;
         }
