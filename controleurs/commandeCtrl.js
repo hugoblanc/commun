@@ -1,5 +1,14 @@
   
-app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, CommandeService, CommandeBoissonService,PlatsService, SauceCommandeService) {
+app.controller('CommandeCtrl', function ($scope,
+										 $q,
+										 $state,
+										 $rootScope,
+										 CommandeService,
+										 CommandeBoissonService,
+										 CommandeDessertService,
+										 PlatsService,
+										 SauceCommandeService){
+
 	$scope.commande = {};
 	$scope.user.nbBoisson = 0;
 	$scope.user.nbPlats = 0;
@@ -7,17 +16,36 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 
 
 
-	function classes(){
+	function classes(type){
 		if($rootScope.user.commandes != null &&
 		 $rootScope.user.currentCommande >=0 &&
 		  $rootScope.user.commandes[$rootScope.user.currentCommande].boissons != undefined &&
-		   $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length > 0){
-
+		   $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length > 0 &&
+		   type=="boisson" ){
 			$scope.user.nbBoisson = $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length;
+			return{'isSelected' :true};
+		}
+
+		if ($rootScope.user.commandes != null &&
+		 $rootScope.user.currentCommande >=0 &&
+		 $rootScope.user.commandes[$rootScope.user.currentCommande].desserts != undefined &&
+         $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length > 0 && 
+         type =="dessert") {
+	        $scope.user.nbDesserts = $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length;
+			return{'isSelected' :true};
+		} 
+
+		if ($rootScope.user.commandes != null &&
+		 $rootScope.user.currentCommande >=0 &&
+		 $rootScope.user.commandes[$rootScope.user.currentCommande].plats != undefined &&
+            $rootScope.user.commandes[$rootScope.user.currentCommande].plats.length > 0 && 
+            type=="plat") {
+	        $scope.user.nbPlats = $rootScope.user.commandes[$rootScope.user.currentCommande].plats.length;
 			return{'isSelected' :true};
 		} else {
 			return {'isSelected': false};
 		}
+
 	}
 
 
@@ -31,13 +59,7 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 
 	//     }
 
-	//     if ($rootScope.user.commandes[$rootScope.user.currentCommande].desserts != undefined &&
- //            $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length > 0) {
 
-	//         $scope.user.nbDesserts = $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length;
-	//         return { 'dessertSelected': true };
-
-	//     } 
 	// };
 
 
@@ -187,6 +209,9 @@ app.controller('CommandeCtrl', function ($scope, $q, $state, $rootScope, Command
 
 	    for (var i = 0; i < desserts.length; i++) {
 	        desserts[i].commande = commandeId;
+	        CommandeDessertService.create(desserts[i]).then(function(resultatDesserts){
+	        	console.log("Desserts on brah ");
+	        });
 	    }
 	}
 
