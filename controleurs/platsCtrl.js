@@ -1,4 +1,9 @@
-  app.controller('PlatsCtrl', function($scope, $state, $rootScope, $q, PlatPrepService, SaucesService) {
+  app.controller('PlatsCtrl', function($scope,
+									   $state,
+									   $rootScope,
+									   $q,
+									   PlatPrepService,
+									   SaucesService){
 
   	$scope.plats = {};
   	$scope.choix = {}; // Tout les choix possible sont préchargé ici
@@ -120,13 +125,8 @@
     	}
     	return result;
 	}
-
-
-
 	
 	$scope.getAllPossibilites = getAllPossibilites();
 	$scope.plats.submit = submit;
 
-
-
-})
+});

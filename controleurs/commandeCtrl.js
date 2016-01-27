@@ -13,6 +13,7 @@ app.controller('CommandeCtrl', function ($scope,
 	$scope.user.nbBoisson = 0;
 	$scope.user.nbPlats = 0;
 	$scope.user.nbDesserts = 0;
+	$scope.commande.prix = 0.0;
 
 
 
@@ -215,6 +216,18 @@ app.controller('CommandeCtrl', function ($scope,
 	    }
 	}
 
+
+	function updateCommandePrice(){
+		$scope.commande.prix = 0;
+		if($rootScope.user.commandes[$rootScope.user.currentCommande].desserts.prix != undefined && $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.prix > 0 )
+			$scope.commande.prix = $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.prix;
+		if($rootScope.user.commandes[$rootScope.user.currentCommande].boissons.prix != undefined && $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.prix > 0 )
+			$scope.commande.prix = $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.prix + $scope.commande.prix;
+		if($rootScope.user.commandes[$rootScope.user.currentCommande].plats.prix != undefined && $rootScope.user.commandes[$rootScope.user.currentCommande].plats.prix > 0 )
+			$scope.commande.prix = $rootScope.user.commandes[$rootScope.user.currentCommande].plats.prix + $scope.commande.prix;
+
+	}
+
 	function envoiCommande(currentCommande){
 		/*Méthode qui envoi les commande à la partie service
 		fonctionne avec une fonction controleCOmmande qui fabrique un tableau de boolean
@@ -230,7 +243,7 @@ app.controller('CommandeCtrl', function ($scope,
 
 
 			$rootScope.user.IDcurrentCommande = resultCommande.data.__metadata.id; // récupération de l'id de la commande qui vient d'être crée
-
+			$rootScope.user.commandes[$rootScope.user.currentCommande].id = resultCommande.data.__metadata.id;
 			var controlMethode = controleCommande(currentCommande);	//On check quels éléments sont présent dans notre commande: boissons ? desserts ? plats ? 
 			//Objet JSON retourné avec trois champs boolean : boissons desserts, et plats
 
@@ -248,6 +261,13 @@ app.controller('CommandeCtrl', function ($scope,
 		});
 	}
 
+	function changeViewPlats(){
+		if($rootScope.user.commandes[$rootScope.user.currentCommande].plats != undefined && $rootScope.user.commandes[$rootScope.user.currentCommande].plats.length > 0)
+			$state.go('tab.newplats');
+		else
+			$state.go('tab.plats');
+	}
+
 	function submit(){
 		/*Méthode fixé au bouton valider elle envoi la commande stocké dans la rootScope
 		elle appel pour cela envoi commande qui appel:
@@ -256,6 +276,7 @@ app.controller('CommandeCtrl', function ($scope,
 		- envoiDesserts*/
 
 		var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
+		$rootScope.user.commandes[$rootScope.user.currentCommande].prix = $scope.commande.prix;
 	    envoiCommande(currentCommande);
 	    $state.go('tab.menu');
 	}
@@ -263,11 +284,14 @@ app.controller('CommandeCtrl', function ($scope,
 	function annuler(){
 
 		$rootScope.user.commandes.pop();
-
+		$rootScope.user.currentCommande = $rootScope.user.currentCommande +1;
 	    $state.go('tab.menu');
 	}
 
 	$scope.commande.creerCommande = createCommande($rootScope.user.id); //tranféré dans la page précédente (menu) car plus logique de créer la commande au moment de l'appuie sur "nouvelle commande"
 	$scope.commande.submit = submit; // lors du clique sur le boutton valider
+	$scope.annuler = annuler;
+	$scope.changeViewPlats = changeViewPlats; // Les plats sont complexe a gérer, si non null on va sur une page de gestion si null on va sur la page d'ajout
 	$scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
+	$scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope
 });

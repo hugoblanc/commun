@@ -34,4 +34,10 @@ app.service('GlobalItems', function ($q) {
         return actualValue;
     };
 
+
+
+    service.arrondiDixiem = function arrondiDixiem(nombre){
+        return Math.round(nombre * 10 )/10;
+    }
+
 });

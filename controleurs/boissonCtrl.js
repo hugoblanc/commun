@@ -18,7 +18,9 @@
             majPriceBoissons($scope.boisson);
         }
 
-		function boissonsChecked(boissons){
+
+
+		function boissonsChecked(boissons){//Controle quelles boissons on été coché 
 			var result = [];
 			for(var i = 0; i < boissons.length; i++){
         		if(boissons[i].isChecked){
@@ -57,6 +59,7 @@
 
 
         	$rootScope.user.commandes[$rootScope.user.currentCommande].boissons = boissonsSelected;
+            $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.prix = $scope.boisson.currentPrice;
         	$state.go('tab.commande');
 
 
