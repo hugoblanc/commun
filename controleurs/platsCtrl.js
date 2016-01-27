@@ -1,8 +1,42 @@
-  app.controller('PlatsCtrl', function($scope, $state, $rootScope, PlatPrepService, SaucesService) {
+  app.controller('PlatsCtrl', function($scope,
+									   $state,
+									   $rootScope,
+									   $q,
+									   PlatPrepService,
+									   SaucesService){
 
   	$scope.plats = {};
   	$scope.choix = {}; // Tout les choix possible sont préchargé ici
   	$scope.plats = {"isSandwich": false, "isPlatPrep": false};
+
+
+  	function initValues(){
+  		var plats = $rootScope.user.commandes[$rootScope.user.currentCommande].plats;
+  		if(plats != undefined){
+  			if(plats.length > 0 && plats[plats.length - 1 ].type == "sandwich"){
+  				$scope.plats.isSandwich = true;
+
+  				for(var i = 0 ; i < $scope.choix.sauces.length ; i++){
+  					for(var j = 0 ; j < plats[plats.length - 1 ].sauce.length; j++){
+  						if(plats[plats.length - 1 ].sauce[j].name == $scope.choix.sauces[i].name)
+  							$scope.choix.sauces[i].isChecked = true;
+  					}
+  				}
+  			} else if (plats.length > 0 && plats[plats.length - 1 ].type == "platsPrep"){
+  				$scope.plats.isSandwich = false;
+
+  				for(var i = 0 ; i < $scope.choix.platsPrepares.length ; i++){
+  					for(var j = 0 ; j < plats.length; j++){
+  						console.log("test");
+  						if(plats[j].name == $scope.choix.platsPrepares[i].name)
+  							$scope.choix.platsPrepares[i].isChecked = true;
+  					}
+  				}
+
+  			}
+  		}
+  	}
+
 
 	$scope.nouveauPlat = function(){
 		
@@ -16,15 +50,26 @@
 
 	function getAllPossibilites(){
 		//Récupère tous les choix possible (sauce, plats, ingredients)
-		getAllSauces();
-		getAllPlatsPrepare();
+
+		getAllSauces().then(function(retourSauce){
+			getAllPlatsPrepare().then(function(){
+				initValues();
+			});
+		});
+
 	}
 
 	function getAllSauces(){
+		var dfd = $q.defer();
 
 		SaucesService.all().then(function(resultatSauces){
 			$scope.choix.sauces = resultatSauces.data.data;
+			dfd.resolve(resultatSauces.data.data);
+		}, function(raison){
+			dfd.reject(raison);
 		});
+
+		return dfd.promise;
 	}
 
 	function getAllIngredients(){
@@ -32,9 +77,16 @@
 	}
 
 	function getAllPlatsPrepare(){
+		var dfd = $q.defer();
+
 		PlatPrepService.all().then(function(resultatPlatsPrepare){
 			$scope.choix.platsPrepares = resultatPlatsPrepare.data.data;
+			dfd.resolve(resultatPlatsPrepare.data.data);
+		}, function(raison){
+			dfd.reject(raison);
 		});
+
+		return dfd.promise;
 	}
 
 	function submit(liste, type){
@@ -73,13 +125,8 @@
     	}
     	return result;
 	}
-
-
-
 	
 	$scope.getAllPossibilites = getAllPossibilites();
 	$scope.plats.submit = submit;
 
-
-
-})
+});
