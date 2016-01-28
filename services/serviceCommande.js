@@ -1,8 +1,8 @@
 
 app.service('CommandeService', function ($http, Backand) {
     var service = this,
-        baseUrl = '/1/objects/',
-        objectName = 'commandes/';
+            baseUrl = '/1/objects/',
+            objectName = 'commandes/';
 
     function getUrl() {
         return Backand.getApiUrl() + baseUrl + objectName;
@@ -21,7 +21,6 @@ app.service('CommandeService', function ($http, Backand) {
     };
 
     service.create = function (object) {
-        
         return $http.post(getUrl(), object);
     };
 
@@ -32,4 +31,50 @@ app.service('CommandeService', function ($http, Backand) {
     service.delete = function (id) {
         return $http.delete(getUrlForId(id));
     };
+
+    service.getAllCommandes = function () {
+        return $http({
+            method: 'GET',
+            url: getUrl(),
+            params: {
+                sort: [{"fieldName": "date", "order": "asc"}]
+            }
+        });
+    };
+
+    service.getCommandesDetail = function (id) {
+        return $http({
+            method: 'GET',
+            url: getUrl() + '/' + id,
+            params: {
+                deep: true,
+                level: 3
+            }
+        });
+    };
+
+    service.getCommandesSup = function (id) {
+        return $http({
+            method: 'GET',
+            url: Backand.getApiUrl() + '/1/query/data/GetCommandeSup',
+            params: {
+                parameters: {
+                    id: id
+                }
+            }
+        });
+    };
+    
+//    service.createCommande = function(commande){
+//        return $http({
+//            method: 'POST',
+//            url: getUrl(),
+//            data : commande,
+//            params: {
+//                deep: true
+//            }
+//        });
+//    };
+    
+
 });

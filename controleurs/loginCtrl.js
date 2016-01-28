@@ -1,4 +1,4 @@
-app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin) {
+app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $rootScope) {
     $scope.lblPseudo = false;
     $scope.lblMdp = false;
     $scope.error = "";
@@ -37,8 +37,16 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin) {
                                     //mettre l'objet currentUser en local
                                     window.localStorage.setItem("currentUser", JSON.stringify(currentUser));
 //                                    $rootScope.currentUser = currentUser;
-                                    //aller a la page tab.acceuil
-                                    $state.go('tab.accueil');                        
+
+                                    //si l'utilisateur a essayer d'acceder a une page sans être connecter
+                                    //on le redirige vers la page
+                                    if($rootScope.redirect != null){
+                                        $state.go($rootScope.redirect);
+                                    }
+                                    else{
+                                        //aller a la page tab.acceuil
+                                        $state.go('tab.accueil'); 
+                                    }
 ////                                 window.localStorage.setItem("token", JSON.stringify(result));                                  
                                 }, function (data) {
                                     $scope.erreur = "Erreur de connexion à la base";

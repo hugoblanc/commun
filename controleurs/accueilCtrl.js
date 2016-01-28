@@ -15,6 +15,10 @@ angular.module('starter.controllers', ['ui.router'])
                 MessagesService.GetMessages($scope.messageOffset)
                         .then(function (result) {
                             $scope.accueil.messages = result.data;
+                            //convertir tout les date en date...
+                            $scope.accueil.messages.forEach(function (message) {
+                                message.date = new Date(message.date);
+                            });
                             $scope.messageOffset += result.data.length;
                         }, function (data) {
                             console.log(data);
@@ -44,11 +48,14 @@ angular.module('starter.controllers', ['ui.router'])
                 EventsService.all()
                         .then(function (result) {
                             ctrl.events = result.data.data;
+                            //convertir tout les date en date...
+                            ctrl.events.forEach(function (event) {
+                                event.date = new Date(event.date);
+                            });
                         }, function (data) {
                             console.log(data);
                         });
-            }
-            ;
+            };
 
             $scope.getAll = getAll();
         });

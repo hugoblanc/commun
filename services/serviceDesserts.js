@@ -31,7 +31,7 @@
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
         };
-    })
+    }),
 
     app.service('CommandeDessertService', function ($http, Backand) {
         var service = this,
@@ -65,4 +65,4 @@
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
         };
-    })
+    });

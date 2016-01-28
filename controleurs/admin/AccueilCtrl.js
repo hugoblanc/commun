@@ -33,6 +33,7 @@ app.controller('AdminAccueilCtrl', function ($scope, $state, MessagesService, Ev
     };
     
     $scope.addEvent = function (event, time) {
+        //vérification des champs
         if (event.name.length < 3 ) {
             $scope.infos.eventName = true;
             return;
@@ -48,9 +49,23 @@ app.controller('AdminAccueilCtrl', function ($scope, $state, MessagesService, Ev
             $scope.infos.eventDate = true;
             return;
         }
-        var date = new Date();
-        date = $scope.event.date;
         $scope.infos.eventDate = false;
+        
+        if(time === null){
+            $scope.infos.eventTime = true;
+            return;
+        }
+        $scope.infos.eventTime = false;
+        
+        if(event.lieu === null){
+            $scope.infos.eventLieu = true;
+            return;
+        }
+        $scope.infos.eventLieu = false;
+        
+        //ajout de l'heure au champs Date 
+        event.date.setHours(time.getHours());
+        event.date.setMinutes(time.getMinutes());
         
         //ajouter le message a la base
         EventsService.create(event).then(function(){
