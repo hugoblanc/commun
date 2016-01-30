@@ -7,9 +7,11 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     $scope.vue = {};
     $scope.vue.isCreate = true;
     $scope.vue.text = "S'identifier";
+    var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
 
-    if(window.localStorage.getItem("infoConnexion") != null){
-        login(JSON.parse(window.localStorage.getItem("infoConnexion")));
+
+    if(localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0){
+        login(localUser);
     }
         
 

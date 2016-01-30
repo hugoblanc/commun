@@ -64,7 +64,7 @@ app.controller('parametresCtrl', function (ServiceLogin, $scope, $state) {
         var test =  1;
 
         ServiceLogin.signout().then(function(){
-            window.localStorage.setItem("infoConnexion", null);
+            window.localStorage.setItem("infoConnexion", "");
             $state.go('signup');
         });
     }
