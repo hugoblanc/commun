@@ -1,61 +1,76 @@
 //(function () {
 //    app.controller('parametresCtrl', ['Connexion', '$location', $rootScope, parametresCtrl]);
-app.controller('parametresCtrl', function (ServiceLogin) {
+app.controller('parametresCtrl', function (ServiceLogin, $scope, $state) {
 //    function parametresCtrl(Connexion, $location) {
-    var self = this;
-    //self.user = $rootScope.user; 
+    $scope.control = {};
+    $scope.user = {};
+
+    //$scope.user = $rootScope.user; 
     function init() {
-        self.user = JSON.parse(window.localStorage.getItem("currentUser"));
-        self.changeMDP = false;
+        $scope.user = JSON.parse(window.localStorage.getItem("currentUser"));
+        $scope.changeMDP = false;
     }
 
-    self.update = function () {
-        self.error = null;
-        self.success = null;
-        if (self.oldPassword && self.newPassword && self.confirmPassword) {
-            if (self.newPassword !== self.confirmPassword) {
-                self.newPassword = self.confirmPassword = null;
-                self.error = 'Les mot de passes sont différents';
+    $scope.update = function () {
+        $scope.error = null;
+        $scope.success = null;
+        if ($scope.oldPassword && $scope.newPassword && $scope.confirmPassword) {
+            if ($scope.newPassword !== $scope.confirmPassword) {
+                $scope.newPassword = $scope.confirmPassword = null;
+                $scope.error = 'Les mot de passes sont différents';
             } else {
-                ServiceLogin.changePassword(self.oldPassword, self.newPassword)
+                ServiceLogin.changePassword($scope.oldPassword, $scope.newPassword)
                         .then(changePasswordSuccess, changePasswordError);
             }
         }
     };
 
     function changePasswordSuccess() {
-        self.oldPassword = self.newPassword = self.confirmPassword = null;
-        self.success = 'Le mot de passe à été changé';
-        self.error = "";
+        $scope.oldPassword = $scope.newPassword = $scope.confirmPassword = null;
+        $scope.success = 'Le mot de passe à été changé';
+        $scope.error = "";
     }
 
     function changePasswordError(response) {
         console.log(response);
-        self.oldPassword = self.newPassword = self.confirmPassword = null;
+        $scope.oldPassword = $scope.newPassword = $scope.confirmPassword = null;
         if(response.status === 417){
-            self.error = "Ancien mot de passe incorrect";
+            $scope.error = "Ancien mot de passe incorrect";
         }
         else{
-            self.error = "Erreur inconnu, réessaye plus tard!";
+            $scope.error = "Erreur inconnu, réessaye plus tard!";
         }
     }
 
-    self.setChangeMDP = function () {
-        self.changeMDP = true;
+    $scope.setChangeMDP = function () {
+        $scope.changeMDP = true;
     };
     
-    self.changeUserParams = function(){
+    function changeUserParams(){
         //mettre a jour année et filiere
-        ServiceLogin.update(self.user.id, {"filiere" : self.user.filiere, "annee" : self.user.annee}).then(function(){
-            self.error = null;
-            self.success = 'Informations enregistrées!';
-            window.localStorage.setItem("currentUser", JSON.stringify(self.user));
+        ServiceLogin.update($scope.user.id, {"filiere" : $scope.user.filiere, "annee" : $scope.user.annee}).then(function(){
+            $scope.error = null;
+            $scope.success = 'Informations enregistrées!';
+            window.localStorage.setItem("currentUser", JSON.stringify($scope.user));
         },function(){
-            self.error = "Erreur inconnu, réessaye plus tard!";
-            self.success = null;
+            $scope.error = "Erreur inconnu, réessaye plus tard!";
+            $scope.success = null;
         });
     };
 
+
+     function signout(){
+
+        var test =  1;
+
+        ServiceLogin.signout().then(function(){
+            window.localStorage.setItem("infoConnexion", "");
+            $state.go('signup');
+        });
+    }
+
+    $scope.control.signout = signout;
+    $scope.changeUserParams = changeUserParams;
     init();
     
 });

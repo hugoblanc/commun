@@ -4,6 +4,16 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     $scope.error = "";
     $scope.filiere = "CGP";
     $scope.annee = "3";
+    $scope.vue = {};
+    $scope.vue.isCreate = true;
+    $scope.vue.text = "S'identifier";
+    var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
+
+
+    if(localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0){
+        login(localUser);
+    }
+        
 
 
     // function login (user, $scope){
@@ -24,6 +34,9 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                 currentUser.fullName = result.fullName;
                                 currentUser.role = result.role;
                                 currentUser.username = result.username;
+
+                                window.localStorage.setItem("infoConnexion", JSON.stringify(user));
+
                                 //currentUser.token = result.access_token;
 
                                 //recupérer les infos du user
@@ -36,7 +49,11 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     currentUser.annee =  result.data[0].annee;
                                     //mettre l'objet currentUser en local
                                     window.localStorage.setItem("currentUser", JSON.stringify(currentUser));
-//                                    $rootScope.currentUser = currentUser;
+                                    $rootScope.user.filiere = currentUser.filiere;
+                                    $rootScope.user.role = currentUser.role;
+                                    $rootScope.user.annee = currentUser.annee;
+                                    $rootScope.user.id = currentUser.id;
+
 
                                     //si l'utilisateur a essayer d'acceder a une page sans être connecter
                                     //on le redirige vers la page
@@ -45,6 +62,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     }
                                     else{
                                         //aller a la page tab.acceuil
+                                        window.local
                                         $state.go('tab.accueil'); 
                                     }
 ////                                 window.localStorage.setItem("token", JSON.stringify(result));                                  
@@ -91,7 +109,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
         return true;
         //return email.substr(email.length - 7) === "@cpe.fr";
     }
-    
+
 
     $scope.goToResetPassword = function () {
         $state.go("resetPassword");

@@ -9,6 +9,7 @@ app.controller('CommandeCtrl', function ($scope,
         PlatsService,
         SauceCommandeService) {
 
+
     $scope.commande = {};
     $scope.user.nbBoisson = 0;
     $scope.user.nbPlats = 0;
@@ -157,4 +158,8 @@ app.controller('CommandeCtrl', function ($scope,
     $scope.changeViewPlats = changeViewPlats; // Les plats sont complexe a gérer, si non null on va sur une page de gestion si null on va sur la page d'ajout
     $scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
     $scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope
+
+
+	
+
 });
