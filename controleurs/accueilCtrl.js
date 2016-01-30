@@ -1,7 +1,4 @@
-angular.module('starter.controllers', ['ui.router'])
-
-
-        .controller('AccueilCtrl', function ($scope, $state, MessagesService, ServiceLogin) {
+       app.controller('AccueilCtrl', function ($scope, $state, MessagesService, ServiceLogin) {
 
             function init() {
                 $scope.accueil = {};
@@ -38,9 +35,9 @@ angular.module('starter.controllers', ['ui.router'])
 
             init();
 //        $scope.getAll = getAll();
-        })
+        }),
 
-        .controller('EventsCtrl', function ($scope, $state, EventsService) {
+        app.controller('EventsCtrl', function ($scope, $state, EventsService) {
             $scope.accueil = {};
             var ctrl = this;
 

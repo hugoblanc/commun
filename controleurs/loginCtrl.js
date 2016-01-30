@@ -1,4 +1,4 @@
-app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $rootScope) {
+app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $rootScope, GlobalItems) {
     $scope.lblPseudo = false;
     $scope.lblMdp = false;
     $scope.error = "";
@@ -86,13 +86,12 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                             console.log(data);
                         });
     }
-    ;
 
     function checkEmail(email) {
         return true;
         //return email.substr(email.length - 7) === "@cpe.fr";
     }
-    ;
+    
 
     $scope.goToResetPassword = function () {
         $state.go("resetPassword");

@@ -1,82 +1,82 @@
-  app.controller('BoissonCtrl', function($scope, GlobalItems,  $stateParams, $q, $state, BoissonService, CommandeBoissonService, $rootScope) {
-	$scope.boisson ={};
+app.controller('BoissonCtrl', function ($scope, GlobalItems, $stateParams, $q, $state, BoissonService, CommandeBoissonService, $rootScope) {
+    $scope.boisson = {};
     $scope.boisson.boissons = [];
     $scope.boisson.currentPrice = 0.0;
     //$rootScope.user.commandes[$rootScope.user.currentCommande].boissons = [];
-	var userStocked =  JSON.parse(window.localStorage.getItem("currentUser"));
+    var userStocked = JSON.parse(window.localStorage.getItem("currentUser"));
 
 
-	
-        function initValues(){
-            for(var i = 0; i < $scope.boisson.boissons.length; i++){
-                for(var j=0; $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length > j ;j++){
-                    if($scope.boisson.boissons[i].name == $rootScope.user.commandes[$rootScope.user.currentCommande].boissons[j].name){
-                        $scope.boisson.boissons[i].isChecked = true;
-                    }
+
+    function initValues() {
+        for (var i = 0; i < $scope.boisson.boissons.length; i++) {
+            for (var j = 0; $rootScope.user.commande.boissons.length > j; j++) {
+                if ($scope.boisson.boissons[i].name == $rootScope.user.commande.boissons[j].name) {
+                    $scope.boisson.boissons[i].isChecked = true;
                 }
             }
-            majPriceBoissons($scope.boisson);
         }
+        majPriceBoissons($scope.boisson);
+    }
 
 
 
-		function boissonsChecked(boissons){//Controle quelles boissons on été coché 
-			var result = [];
-			for(var i = 0; i < boissons.length; i++){
-        		if(boissons[i].isChecked){
-        			result.push(boissons[i]);
-        		}
-        	}
-        	return result;
-		}
-
-
-        function majPriceBoissons(boissons){
-            if(boissons != undefined){
-                var boissonsSelected = boissonsChecked(boissons.boissons);
-                $scope.boisson.currentPrice =  GlobalItems.majValueItems(boissonsSelected);
+    function boissonsChecked(boissons) {//Controle quelles boissons on été coché 
+        var result = [];
+        for (var i = 0; i < boissons.length; i++) {
+            if (boissons[i].isChecked) {
+                result.push(boissons[i]);
             }
         }
+        return result;
+    }
+
+
+    function majPriceBoissons(boissons) {
+        if (boissons != undefined) {
+            var boissonsSelected = boissonsChecked(boissons.boissons);
+            $scope.boisson.currentPrice = GlobalItems.majValueItems(boissonsSelected);
+        }
+    }
 
 
 
-        function getAll() {
-            var dfd = $q.defer();
-            BoissonService.all()
+    function getAll() {
+        var dfd = $q.defer();
+        BoissonService.all()
                 .then(function (result) {
                     $scope.boisson.boissons = result.data.data;
                     dfd.resolve(result.data.data);
-                }, function(raison) {
-				  console.log('In your face brah !');
-                  dfd.reject(raison);
-				});
+                }, function (raison) {
+                    console.log('In your face brah !');
+                    dfd.reject(raison);
+                });
 
-                return dfd.promise;
-            }
+        return dfd.promise;
+    }
 
-        function submit(boissons){
-        	var boissonsSelected = boissonsChecked(boissons.boissons);
-
-
-        	$rootScope.user.commandes[$rootScope.user.currentCommande].boissons = boissonsSelected;
-            $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.prix = $scope.boisson.currentPrice;
-        	$state.go('tab.commande');
+    function submit(boissons) {
+        var boissonsSelected = boissonsChecked(boissons.boissons);
 
 
-        	// CommandeBoissonService.create(boissonsSelected).then(function(result){
-        	// 	console.log("correcte ! ");
-        	// });
+        $rootScope.user.commande.boissons = boissonsSelected;
+        $rootScope.user.commande.boissons.prix = $scope.boisson.currentPrice;
+        $state.go('tab.commande');
+
+
+        // CommandeBoissonService.create(boissonsSelected).then(function(result){
+        // 	console.log("correcte ! ");
+        // });
+    }
+
+
+
+
+    $scope.boisson.submit = submit;
+    $scope.boisson.getAll = getAll().then(function (resultGetAll) {
+        if ($rootScope.user.commande.boissons.length > 0) {
+            $scope.boisson.initValues = initValues();
         }
-
-        
-
-
-        $scope.boisson.submit = submit;
-        $scope.boisson.getAll = getAll().then(function(resultGetAll){
-            if($rootScope.user.commandes[$rootScope.user.currentCommande] != undefined && $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length > 0 ){
-                $scope.boisson.initValues = initValues();
-            }
-        });
-        $scope.majPriceBoissons = majPriceBoissons;
+    });
+    $scope.majPriceBoissons = majPriceBoissons;
 
 });

@@ -6,8 +6,8 @@ app.controller('DessertCtrl', function ($scope, $q, $stateParams, $state, Desser
 
     function initValues(){
         for(var i = 0; i < $scope.dessert.desserts.length; i++){
-            for(var j=0; $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length > j ;j++){
-                if($scope.dessert.desserts[i].name == $rootScope.user.commandes[$rootScope.user.currentCommande].desserts[j].name){
+            for(var j=0; $rootScope.user.commande.desserts.length > j ;j++){
+                if($scope.dessert.desserts[i].name == $rootScope.user.commande.desserts[j].name){
                     $scope.dessert.desserts[i].isChecked = true;
                 }
             }
@@ -54,14 +54,14 @@ app.controller('DessertCtrl', function ($scope, $q, $stateParams, $state, Desser
 
     function submit(desserts) {
         var dessertsSelected = dessertsChecked(desserts.desserts);
-        $rootScope.user.commandes[$rootScope.user.currentCommande].desserts = dessertsSelected;
-        $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.prix = $scope.dessert.currentPrice;
+        $rootScope.user.commande.desserts = dessertsSelected;
+        $rootScope.user.commande.desserts.prix = $scope.dessert.currentPrice;
         $state.go('tab.commande');
     }
 
     $scope.dessert.submit = submit;
     $scope.dessert.getAll = getAll().then(function(resultDessertsGetAll){
-        if($rootScope.user.commandes[$rootScope.user.currentCommande] != undefined && $rootScope.user.commandes[$rootScope.user.currentCommande].desserts.length > 0 ){
+        if($rootScope.user.commande.desserts.length > 0 ){
             $scope.dessert.initValues = initValues();
         }
     });

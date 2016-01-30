@@ -1,5 +1,5 @@
 
-app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, ServiceLogin, $timeout) {
+app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, ServiceLogin, $timeout, $rootScope) {
 
     function init() {
         //stock les commandes
@@ -50,6 +50,10 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
                 .then(function (result) {
                     if (result.data.colonne === "") {
                         result.data.colonne = 0;
+                    }
+                    //si la commande à été rentré par un admin
+                    if(result.data.user === ""){
+                        result.data.user = {'firstName' : "Local" };
                     }
                     var y = $scope.ordreCommande[commande.id];
                     $scope.commandes[result.data.colonne][y] = result.data;
@@ -129,6 +133,11 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
             refreshCommande();
         }, 30000);
     }
+    
+    $scope.ajouterCommande = function(){
+        $rootScope.user.commande = {"plats":[], "boissons": [], "desserts": [], "statut": "Non validÃ©", "date": (new Date()), "admin" : true};
+        $state.go('tabO.commande'); 
+    };
 
     //fonction exécutée a l'affichage
     init();

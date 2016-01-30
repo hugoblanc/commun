@@ -11,7 +11,7 @@
 
 
   	function initValues(){
-  		var plats = $rootScope.user.commandes[$rootScope.user.currentCommande].plats;
+  		var plats = $rootScope.user.commande.plats;
   		if(plats != undefined){
   			if(plats.length > 0 && plats[plats.length - 1 ].type == "sandwich"){
   				$scope.plats.isSandwich = true;
@@ -39,14 +39,9 @@
 
 
 	$scope.nouveauPlat = function(){
-		
-		//Quand l'utilisateur clique sur nouvelle commande on fabrique un objet vide et on incrémente l'id local de la commande
-
-		$rootScope.user.currentCommande = $rootScope.user.currentCommande +1;
-
-		//Et on navigue vers la page souhaité
+		//On navigue vers la page souhaité
 		$state.go('tab.commande');
-	}
+	};
 
 	function getAllPossibilites(){
 		//Récupère tous les choix possible (sauce, plats, ingredients)
@@ -95,17 +90,17 @@
 		var listeItemsSelected = itemsSelected(liste);
 
 		if(type == "sauces"){//Si il s'agit de sauces alors un seul plat est créé
-			$rootScope.user.commandes[$rootScope.user.currentCommande].plats.push({
+			$rootScope.user.commande.plats.push({
 				"name":"hotdog",
 				"type":"sandwich",
 				"prix": 1.50,
-				"sauce":listeItemsSelected
+				"sauces":listeItemsSelected
 			});
 		} else if (type == "platsPrep"){/* Si il s'agit de plat préparé alors on ajout
 			un plat pour chaque case du tableau plats[]  de rootscope*/
 
 			for(var j = 0 ; j < listeItemsSelected.length ; j++){
-				$rootScope.user.commandes[$rootScope.user.currentCommande].plats.push({
+				$rootScope.user.commande.plats.push({
 					"type":"platsPrep",
 					"name": listeItemsSelected[j].name,
 					"prix": listeItemsSelected[j].prix
