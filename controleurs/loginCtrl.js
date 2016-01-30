@@ -10,10 +10,10 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
 
 
-    if(localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0){
+    if (localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0) {
         login(localUser);
     }
-        
+
 
 
     // function login (user, $scope){
@@ -44,26 +44,32 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     //si on a récupérer l'id
                                     $scope.erreur = "";
                                     //stocker l'id
-                                    currentUser.id =  result.data[0].id;
-                                    currentUser.filiere =  result.data[0].filiere;
-                                    currentUser.annee =  result.data[0].annee;
+                                    currentUser.id = result.data[0].id;
+                                    currentUser.filiere = result.data[0].filiere;
+                                    currentUser.annee = result.data[0].annee;
+                                    currentUser.firstName = result.data[0].firstName;
+                                    currentUser.lastName = result.data[0].lastName;
+                                    
                                     //mettre l'objet currentUser en local
                                     window.localStorage.setItem("currentUser", JSON.stringify(currentUser));
-                                    $rootScope.user.filiere = currentUser.filiere;
-                                    $rootScope.user.role = currentUser.role;
-                                    $rootScope.user.annee = currentUser.annee;
+                                    $rootScope.user = {};
                                     $rootScope.user.id = currentUser.id;
-
+                                    $rootScope.user.role = currentUser.role;
+                                    $rootScope.user.filiere = currentUser.filiere;
+                                    $rootScope.user.annee = currentUser.annee;
+                                    $rootScope.user.email = currentUser.username;
+                                    $rootScope.user.firstName = currentUser.firstName;
+                                    $rootScope.user.lastname = currentUser.lastName;
+                                    $rootScope.user.commandes = [];
+                                    $rootScope.user.commande = {"plats": [], "boissons": [], "desserts": [], "statut": "Non validÃ©", "date": (new Date())};
 
                                     //si l'utilisateur a essayer d'acceder a une page sans être connecter
                                     //on le redirige vers la page
-                                    if($rootScope.redirect != null){
+                                    if ($rootScope.redirect != null) {
                                         $state.go($rootScope.redirect);
-                                    }
-                                    else{
+                                    } else {
                                         //aller a la page tab.acceuil
-                                        window.local
-                                        $state.go('tab.accueil'); 
+                                        $state.go('tab.accueil');
                                     }
 ////                                 window.localStorage.setItem("token", JSON.stringify(result));                                  
                                 }, function (data) {
