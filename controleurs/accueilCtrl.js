@@ -1,7 +1,4 @@
-angular.module('starter.controllers', ['ui.router'])
-
-
-        .controller('AccueilCtrl', function ($scope, $state, MessagesService, ServiceLogin) {
+        app.controller('AccueilCtrl', function ($scope, $state, MessagesService, ServiceLogin) {
 
             function init() {
                 $scope.accueil = {};
@@ -11,7 +8,7 @@ angular.module('starter.controllers', ['ui.router'])
                     $scope.admin = true;
                 }
             }
-            $scope.getAll = function () {
+            function getAll() {
                 MessagesService.GetMessages($scope.messageOffset)
                         .then(function (result) {
                             $scope.accueil.messages = result.data;
@@ -37,10 +34,10 @@ angular.module('starter.controllers', ['ui.router'])
             };
 
             init();
-//        $scope.getAll = getAll();
+        $scope.getAll = getAll();
         })
 
-        .controller('EventsCtrl', function ($scope, $state, EventsService) {
+        app.controller('EventsCtrl', function ($scope, $state, EventsService) {
             $scope.accueil = {};
             var ctrl = this;
 
