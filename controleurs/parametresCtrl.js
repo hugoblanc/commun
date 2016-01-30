@@ -1,8 +1,10 @@
 //(function () {
 //    app.controller('parametresCtrl', ['Connexion', '$location', $rootScope, parametresCtrl]);
-app.controller('parametresCtrl', function (ServiceLogin) {
+app.controller('parametresCtrl', function (ServiceLogin, $scope, $state) {
 //    function parametresCtrl(Connexion, $location) {
     var self = this;
+    $scope.control = {};
+
     //self.user = $rootScope.user; 
     function init() {
         self.user = JSON.parse(window.localStorage.getItem("currentUser"));
@@ -56,6 +58,18 @@ app.controller('parametresCtrl', function (ServiceLogin) {
         });
     };
 
+
+     function signout(){
+
+        var test =  1;
+
+        ServiceLogin.signout().then(function(){
+            window.localStorage.setItem("infoConnexion", null);
+            $state.go('signup');
+        });
+    }
+
+    $scope.control.signout = signout;
     init();
     
 });

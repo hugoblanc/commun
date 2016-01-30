@@ -284,13 +284,13 @@ app.controller('CommandeCtrl', function ($scope,
 	function annuler(){
 
 		$rootScope.user.commandes.pop();
-		$rootScope.user.currentCommande = $rootScope.user.currentCommande +1;
+		$rootScope.user.currentCommande = $rootScope.user.currentCommande - 1;
 	    $state.go('tab.menu');
 	}
 
 	$scope.commande.creerCommande = createCommande($rootScope.user.id); //tranféré dans la page précédente (menu) car plus logique de créer la commande au moment de l'appuie sur "nouvelle commande"
 	$scope.commande.submit = submit; // lors du clique sur le boutton valider
-	$scope.annuler = annuler;
+	$scope.commande.annuler = annuler;
 	$scope.changeViewPlats = changeViewPlats; // Les plats sont complexe a gérer, si non null on va sur une page de gestion si null on va sur la page d'ajout
 	$scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
 	$scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope

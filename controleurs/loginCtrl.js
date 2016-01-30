@@ -4,6 +4,14 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     $scope.error = "";
     $scope.filiere = "CGP";
     $scope.annee = "3";
+    $scope.vue = {};
+    $scope.vue.isCreate = true;
+    $scope.vue.text = "S'identifier";
+
+    if(window.localStorage.getItem("infoConnexion") != null){
+        login(JSON.parse(window.localStorage.getItem("infoConnexion")));
+    }
+        
 
 
     // function login (user, $scope){
@@ -25,6 +33,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                 currentUser.role = result.role;
                                 currentUser.username = result.username;
 
+                                window.localStorage.setItem("infoConnexion", JSON.stringify(user));
 
                                 //currentUser.token = result.access_token;
 
@@ -51,6 +60,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     }
                                     else{
                                         //aller a la page tab.acceuil
+                                        window.local
                                         $state.go('tab.accueil'); 
                                     }
 ////                                 window.localStorage.setItem("token", JSON.stringify(result));                                  
@@ -97,6 +107,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
         return true;
         //return email.substr(email.length - 7) === "@cpe.fr";
     }
+
 
     $scope.goToResetPassword = function () {
         $state.go("resetPassword");
