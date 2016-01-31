@@ -9,6 +9,7 @@ app.controller('parametresCtrl', function (ServiceLogin, $scope, $state) {
     function init() {
         $scope.user = JSON.parse(window.localStorage.getItem("currentUser"));
         $scope.changeMDP = false;
+
     }
 
     $scope.update = function () {

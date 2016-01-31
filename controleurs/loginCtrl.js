@@ -7,6 +7,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     $scope.vue = {};
     $scope.vue.isCreate = true;
     $scope.vue.text = "S'identifier";
+    $scope.isLoading = false;
     var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
 
 
@@ -18,15 +19,19 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
 
     // function login (user, $scope){
     function login(user) {
+        $scope.isLoading = true;
         if (('' + user.pseudo).length < 4 || ('' + user.mdp).length < 4) {
             if (('' + user.pseudo).length < 4)
                 $scope.lblPseudo = true;
             if (('' + user.mdp).length < 6)
                 $scope.lblMdp = true;
 
+            $scope.isLoading = false;
+
         } else {
             //connexion 
-            ServiceLogin.signin(user.pseudo, user.mdp)
+            //if(!$scope.isLoading)
+                ServiceLogin.signin(user.pseudo, user.mdp)
                     .then(
                             function (result) {
                                 //stoker les infos du user en local
@@ -54,7 +59,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     $rootScope.user.annee = currentUser.annee;
                                     $rootScope.user.id = currentUser.id;
 
-
+                                    $scope.isLoading = false;
                                     //si l'utilisateur a essayer d'acceder a une page sans être connecter
                                     //on le redirige vers la page
                                     if($rootScope.redirect != null){
@@ -62,15 +67,16 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     }
                                     else{
                                         //aller a la page tab.acceuil
-                                        window.local
                                         $state.go('tab.accueil'); 
                                     }
 ////                                 window.localStorage.setItem("token", JSON.stringify(result));                                  
                                 }, function (data) {
                                     $scope.erreur = "Erreur de connexion à la base";
+                                    $scope.isLoading = false;
                                 });
                             },
                             function (data) {
+                                $scope.isLoading =false;
                                 if (data.error === "invalid_grant") {
                                     $scope.error = "Email ou mot de passe incorrect";
                                 } else {
@@ -81,12 +87,16 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                             }
                     );
         }
+
+
     }
 
 
     //Sign up to Backand
     function signup(form) {
-        if (!checkEmail(form.email)) {
+        //$scope.isLoading = true;
+
+        if (!checkEmail(form.email) && !isLoading) {
             $scope.error = "Email invalide, vous devez rentrer un email de CPE.";
             return;
         }
@@ -97,9 +107,11 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                     //$rootScope.user.id = $scope.getUserId(user.pseudo);
                     $scope.error = "";
                     $state.go('verifEmail');
+                    $scope.isLoading = false;
 
                 },
                         function (data) {
+                            $scope.isLoading = false;
                             $scope.error = data.data;
                             console.log(data);
                         });
