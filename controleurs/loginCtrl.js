@@ -52,12 +52,14 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     currentUser.id =  result.data[0].id;
                                     currentUser.filiere =  result.data[0].filiere;
                                     currentUser.annee =  result.data[0].annee;
+                                    currentUser.nbCmdSignaler = result.data[0].nbCmdSignaler;
                                     //mettre l'objet currentUser en local
                                     window.localStorage.setItem("currentUser", JSON.stringify(currentUser));
                                     $rootScope.user.filiere = currentUser.filiere;
                                     $rootScope.user.role = currentUser.role;
                                     $rootScope.user.annee = currentUser.annee;
                                     $rootScope.user.id = currentUser.id;
+                                    $rootScope.user.nbCmdSignaler = currentUser.nbCmdSignaler;
 
                                     $scope.isLoading = false;
                                     //si l'utilisateur a essayer d'acceder a une page sans être connecter
@@ -68,6 +70,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                     else{
                                         //aller a la page tab.acceuil
                                         $state.go('tab.accueil'); 
+                                        $rootScope.$state = "";
                                     }
 ////                                 window.localStorage.setItem("token", JSON.stringify(result));                                  
                                 }, function (data) {
@@ -87,8 +90,6 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                             }
                     );
         }
-
-
     }
 
 
@@ -100,13 +101,17 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
             $scope.error = "Email invalide, vous devez rentrer un email de CPE.";
             return;
         }
-        return Backand.signup(form.firstName, form.lastName, form.email,
-                form.password, form.password, {filiere: form.filiere, annee: form.annee}
-        )
+        return Backand.signup(form.firstName,
+                                form.lastName,
+                                form.email,
+                                form.password,
+                                form.confirmPassword,
+                                {filiere: form.filiere, annee: form.annee})
                 .then(function (response) {
                     //$rootScope.user.id = $scope.getUserId(user.pseudo);
                     $scope.error = "";
                     $state.go('verifEmail');
+
                     $scope.isLoading = false;
 
                 },

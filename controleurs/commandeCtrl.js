@@ -6,10 +6,19 @@ app.controller('CommandeCtrl', function ($scope,
         CommandeService,
         CommandeBoissonService,
         CommandeDessertService,
+        CommandeParamService,
         PlatsService,
         SauceCommandeService) {
 
+    autorisationCommander();
 
+    //Gestion de l'autorisation a commander 
+    $scope.autorise = {};
+    $scope.autorise.autoriseToCommande = true;
+    $scope.autorise.color = "button-balanced";
+    $scope.autorise.message = "";
+
+    //Gestion de la commande et du nombre de boisson/desserts/plats
     $scope.commande = {};
     $scope.user.nbBoisson = 0;
     $scope.user.nbPlats = 0;
@@ -45,18 +54,44 @@ app.controller('CommandeCtrl', function ($scope,
     }
 
 
-    // function classes() {
-    //     //if ($rootScope.user.commandes != null && $rootScope.user.currentCommande >= 0) {
-    //     if ($rootScope.user.commandes[$rootScope.user.currentCommande].boissons != undefined &&
-    //            $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length > 0) {
+    function autorisationCommander(){ // utilisé pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
+        CommandeParamService.all().then(function(resultParamOnline){
+            $scope.autorise.autoriseToCommande = resultParamOnline.data.data[0].accesCommander;
+            $scope.autorise.message = resultParamOnline.data.data[0].message;
 
-    //         $scope.user.nbBoisson = $rootScope.user.commandes[$rootScope.user.currentCommande].boissons.length;
-    //         return { 'boissonSelected': true };
+            if($rootScope.user.nbCmdSignaler > 3){
+                $scope.autorise.autoriseToCommande = false;
+                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, tu pensais nous niquer ? Viens au bde pour en parler :) ";
+            }
 
-    //     }
+            if($scope.autorise.autoriseToCommande)
+                $scope.autorise.color = "button-balanced";
+            else
+                $scope.autorise.color = "button-dark";
 
 
-    // };
+        }, function(error){
+            console.log("we are out brah");
+
+            if($rootScope.user.nbCmdSignaler > 3){
+                $scope.autorise.autoriseToCommande = false;
+                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, viens voir les BDE pour en parler";
+            }
+
+            if($scope.autorise.autoriseToCommande)
+                $scope.autorise.color = "button-balanced";
+            else
+                $scope.autorise.color = "button-dark";
+
+
+
+        });
+
+
+        if($rootScope.user.nbCmdSignaler > 3){
+
+        }
+    }
 
 
 
@@ -75,18 +110,6 @@ app.controller('CommandeCtrl', function ($scope,
 
     }
 
-    //PrÃ©parer la commande anvant l'envoi en base (check quoi envoyer)
-    // function preparCommande(){
-    // 	var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
-
-    // 		var newCommande = {
-    // 		"user": $rootScope.user.id,
-    // 		"date": currentCommande.date,
-    // 		"statut": "EnvoyÃ©"
-    // 	};
-    // 	return currentCommande;
-
-    // }  
 
 
     function updateCommandePrice() {
@@ -128,21 +151,22 @@ app.controller('CommandeCtrl', function ($scope,
     function submit() {
         /*MÃ©thode fixÃ© au bouton valider elle envoi la commande stockÃ© dans la rootScope*/
 
-        $rootScope.user.commande.prix = $scope.commande.prix;
-        $rootScope.user.commande.user = $rootScope.user.id;
-        var createByAdmin = $rootScope.user.commande;
-        envoiCommande($rootScope.user.commande);
-        
-        //si la commande a été créer par un admin dans l'onglet admin
-        if(createByAdmin.admin){
-            //envoyer la commande en local
-            $rootScope.newCommande = createByAdmin;
-            $state.go('tabAdmin.commande');
+        if($scope.autorise.autoriseToCommande){ //Validation uniquement si user autorisé
+            $rootScope.user.commande.prix = $scope.commande.prix;
+            $rootScope.user.commande.user = $rootScope.user.id;
+            var createByAdmin = $rootScope.user.commande;
+            envoiCommande($rootScope.user.commande);
+            
+            //si la commande a été créer par un admin dans l'onglet admin
+            if(createByAdmin.admin){
+                //envoyer la commande en local
+                $rootScope.newCommande = createByAdmin;
+                $state.go('tabAdmin.commande');
+            }
+            else{
+                $state.go('tab.menu');
+            }
         }
-        else{
-            $state.go('tab.menu');
-        }
-        
     }
 
     function annuler() {
