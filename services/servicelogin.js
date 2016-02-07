@@ -58,15 +58,15 @@ app.service('ServiceLogin', function (Backand, $http) {
     self.getUserInfos = function(email){
         return $http({
             method: 'GET',
-            url: Backand.getApiUrl() + '/1/query/data/GetUser',
+            url: getUrl(),
             params: {
-                parameters: {
-                    email: email
-                }
+              filter : [{fieldName:"email", operator:"equals", value:email}]
+
             }
         });
+
     };
-    
+
     self.getUserDetails = function (id){
         return Backand.getUserDetails();
     };

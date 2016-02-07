@@ -77,4 +77,8 @@ app.service('EventsService', function ($http, Backand) {
     service.delete = function (id) {
         return $http.delete(getUrlForId(id));
     };
+
+  service.GetEvents = function(){
+
+  }
 });

@@ -1,8 +1,7 @@
 app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $rootScope, GlobalItems) {
-  $scope.lblPseudo = false;
-  $scope.lblMdp = false;
-  $scope.filiere = "CGP";
-  $scope.annee = "3";
+  $scope.user = {};
+  $scope.user.filiere = "CGP";
+  $scope.user.annee = "3";
   $scope.vue = {};
   $scope.vue.isCreate = true;
   $scope.vue.text = "S'identifier";
@@ -46,14 +45,15 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
 
             //recupérer les infos du user
             ServiceLogin.getUserInfos(result.username).then(function (result) {
-              //si on a récupérer l'id
-              //stocker l'id
-              currentUser.id = result.data[0].id;
-              currentUser.filiere = result.data[0].filiere;
-              currentUser.annee = result.data[0].annee;
-              currentUser.firstName = result.data[0].firstName;
-              currentUser.lastName = result.data[0].lastName;
-              currentUser.nbCmdSignaler = result.data[0].nbCmdSignaler;
+
+              var user = result.data.data[0];
+              //stockage des infos
+              currentUser.id = user.id;
+              currentUser.filiere = user.filiere;
+              currentUser.annee = user.annee;
+              currentUser.firstName = user.firstName;
+              currentUser.lastName = user.lastName;
+              currentUser.nbCmdSignaler = user.nbCmdSignaler;
 
               //mettre l'objet currentUser en local
               window.localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -64,7 +64,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
               $rootScope.user.annee = currentUser.annee;
               $rootScope.user.email = currentUser.username;
               $rootScope.user.firstName = currentUser.firstName;
-              $rootScope.user.lastname = currentUser.lastName;
+              $rootScope.user.lastName = currentUser.lastName;
               $rootScope.user.commande = {
                 "plats": [],
                 "boissons": [],
@@ -121,6 +121,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       user.mdp, user.mdp2, {filiere: user.filiere, annee: user.annee}
     ).then(function (response) {
         //$rootScope.user.id = $scope.getUserId(user.pseudo);
+        $scope.showMessage("Inscription réussit", true);
         $state.go('verifEmail');
 
         $scope.isLoading = false;
@@ -129,9 +130,9 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       function (data) {
         //si le user est déjà cr�éer
         if (data.status === 406) {
-          $scope.$parent.showMessage("Adresse Email déjà utilisée", false);
+          $scope.showMessage("Adresse Email déjà utilisée", false);
         } else {
-          $scope.$parent.showMessage(data.data.error_description, false);
+          $scope.showMessage(data.data.error_description, false);
         }
         $scope.isLoading = false;
         console.log(data);
@@ -139,7 +140,8 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
   }
 
   function checkEmail(email) {
-    return email.substr(email.length - 7) === "@cpe.fr";
+    //return email.substr(email.length - 7) === "@cpe.fr";
+    return true;
   }
 
 

@@ -65,7 +65,7 @@ app.service('CommandeService', function ($http, Backand) {
             }
         });
     };
-    
+
     service.createCommande = function(commande){
         return $http({
             method: 'POST',
@@ -76,9 +76,9 @@ app.service('CommandeService', function ($http, Backand) {
             }
         });
     };
-    
-    
-    //récupérer toute les commandes d'un user
+
+
+    //rÃ©cupÃ©rer toute les commandes d'un user
     service.getUserCommandes = function(userId){
         return $http({
             method: 'GET',
@@ -87,11 +87,11 @@ app.service('CommandeService', function ($http, Backand) {
                 filter : [{fieldName:"user", operator:"in", value:userId}]
             }
         });
-        
+
     };
 
 
-    
+
 
 });
 
