@@ -140,8 +140,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
   }
 
   function checkEmail(email) {
-    //return email.substr(email.length - 7) === "@cpe.fr";
-    return true;
+    return email.substr(email.length - 7) === "@cpe.fr";
   }
 
 
