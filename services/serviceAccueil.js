@@ -31,15 +31,18 @@ app.service('MessagesService', function ($http, Backand) {
         return $http.delete(getUrlForId(id));
     };
 
-    service.GetMessages = function (offset) {
+    service.GetMessages = function () {
         return $http({
             method: 'GET',
-            url: Backand.getApiUrl() + '/1/query/data/GetMessages',
+            url: getUrl(),
             params: {
-                parameters: {"offset" : offset}
+                pageSize: 20,
+                pageNumber: 1
             }
         });
     };
+
+
 });
 
 app.service('EventsService', function ($http, Backand) {

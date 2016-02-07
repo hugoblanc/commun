@@ -1,5 +1,5 @@
-app.controller('MenuCtrl', function ($scope, $state, $rootScope) {
-    $scope.commandes = $rootScope.user.commandes || null;
+app.controller('MenuCtrl', function ($scope, $state, $rootScope, CommandeService, GlobalItems) {
+    $scope.commandes = [];
 
 
 
@@ -23,9 +23,27 @@ app.controller('MenuCtrl', function ($scope, $state, $rootScope) {
         else if (commande.boissons[0] != undefined)
             informationCommande = informationCommande + commande.boissons[0].name;
 
-        informationCommande = informationCommande + '    ' + commande.prix + '€';
+        informationCommande = informationCommande + '    ' + GlobalItems.arrondiDixiem(commande.prix) + '€';
         return informationCommande;
     }
 
+    function getUserCommandes() {
+        CommandeService.getUserCommandes($rootScope.user.id)
+                .then(function (result) {
+                    $scope.commandes = [];
+                    result.data.data.forEach(function (commande) {
+                        CommandeService.getCommandesDetail(commande.id)
+                                .then(function (result) {
+                                    result.data.date = new Date(result.data.date);
+                                    $scope.commandes.push(result.data);
+                                });
+                    });
+                },
+                        function () {
+                            $scope.showMessage("Impossible de chargé vos commandes", false);
+                        });
+    }
+
     $scope.displayInformation = displayInformation;
+    $scope.getUserCommandes = getUserCommandes();
 });

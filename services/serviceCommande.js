@@ -76,6 +76,19 @@ app.service('CommandeService', function ($http, Backand) {
             }
         });
     };
+    
+    
+    //récupérer toute les commandes d'un user
+    service.getUserCommandes = function(userId){
+        return $http({
+            method: 'GET',
+            url: getUrl(),
+            params: {
+                filter : [{fieldName:"user", operator:"in", value:userId}]
+            }
+        });
+        
+    };
 
 
     

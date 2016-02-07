@@ -1,23 +1,41 @@
-  app.controller('NewPlatsCtrl', function($scope, $state, $rootScope, $q, PlatPrepService, SaucesService) {
+app.controller('NewPlatsCtrl', function ($scope, $state, $rootScope, $q, PlatPrepService, SaucesService) {
 
 
-  	$scope.plats = $rootScope.user.commande.plats;
+  $scope.plats = $rootScope.user.commande.plats;
 
-  	function deletePlat(plat){
-  		$scope.plats.splice($scope.plats.indexOf(plat), 1);
-  	}
+  function deletePlat(plat) {
+    //enlever le prix
+    $rootScope.user.commande.plats.prix -= plat.prix * plat.nb;
+    //$rootScope.user.commande.prix -= plat.prix * plat.nb;
+    $rootScope.user.commande.plats.nb -= plat.nb;
 
-  	function addPlat(){
-  		$rootScope.user.commande.plats = $scope.plats;
-  		$state.go('tab.plats');
-  	}
+    if ($rootScope.ordi) {
+      $scope.updateCommandePrice();
+    }
+    //retirer le plat de la liste
+    $scope.plats.splice($scope.plats.indexOf(plat), 1);
+  }
 
-  	function submit(){
-  		$rootScope.user.commande.plats = $scope.plats;
-  		$state.go('tab.commande');
-  	}
+  function addPlat() {
+    $rootScope.user.commande.plats = $scope.plats;
+    if ($rootScope.ordi) {
+      $scope.$parent.setDisplay(0);
+    } else {
+      $state.go('tab.plats');
+    }
+  }
 
-  	$scope.deletePlat = deletePlat;
-  	$scope.addPlat = addPlat;
-  	$scope.submit = submit;
+  function submit() {
+    $rootScope.user.commande.plats = $scope.plats;
+    if ($rootScope.ordi) {
+      $scope.$parent.buttonValiderOrdi(2);
+    } else {
+      $state.go('tab.commande');
+    }
+
+  }
+
+  $scope.deletePlat = deletePlat;
+  $scope.addPlat = addPlat;
+  $scope.submit = submit;
 });

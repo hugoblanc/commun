@@ -1,45 +1,39 @@
-        app.controller('AccueilCtrl', function ($scope, $state, MessagesService, ServiceLogin) {
+app.controller('AccueilCtrl', function ($scope, $state, MessagesService, $timeout) {
 
 
-            function init() {
-                $scope.accueil = {};
-                $scope.messageOffset = 0;
-                $scope.user = JSON.parse(window.localStorage.getItem("currentUser"));
-                if ($scope.user.role === "Admin") {
-                    $scope.admin = true;
-                }
-            }
-            function getAll() {
-                MessagesService.GetMessages($scope.messageOffset)
-                        .then(function (result) {
-                            $scope.accueil.messages = result.data;
-                            //convertir tout les date en date...
-                            $scope.accueil.messages.forEach(function (message) {
-                                message.date = new Date(message.date);
-                            });
-                            $scope.messageOffset += result.data.length;
-                        }, function (data) {
-                            console.log(data);
-                        });
-            };
+    function init() {
+        $scope.accueil = {};
+        $scope.user = JSON.parse(window.localStorage.getItem("currentUser"));
+        if ($scope.user.role === "Admin") {
+            $scope.admin = true;
+        }
+    }
+    function getAll() {
+        MessagesService.GetMessages()
+                .then(function (result) {
+                    $scope.accueil.messages = result.data.data;
+                    //convertir tout les date en date...
+                    $scope.accueil.messages.forEach(function (message) {
+                        message.date = new Date(message.date);
+                    });
+                }, function (data) {
+                    console.log(data);
+                });
+    }
 
 
+    $scope.goToParametres = function () {
+        $state.go("parametres");
+    };
 
+    $scope.goToAdmin = function () {
+        $state.go("tabAdmin.accueil");
+    };
 
-            $scope.goToParametres = function () {
-                $state.go("parametres");
-            };
+    init();
 
-            $scope.goToAdmin = function () {
-                $state.go("tabAdmin.accueil");
-            };
-
-            init();
-
-        $scope.getAll = getAll();
-        }),
-
-
+    $scope.getAll = getAll();
+}),
         app.controller('EventsCtrl', function ($scope, $state, EventsService) {
             $scope.accueil = {};
             var ctrl = this;
@@ -55,9 +49,9 @@
                         }, function (data) {
                             console.log(data);
                         });
-            };
+            }
+            ;
 
             $scope.getAll = getAll();
         });
 
-    
