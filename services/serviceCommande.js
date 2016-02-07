@@ -94,3 +94,26 @@ app.service('CommandeService', function ($http, Backand) {
     
 
 });
+
+
+
+
+
+
+app.service('CommandeParamService', function ($http, Backand) {
+    var service = this,
+            baseUrl = '/1/objects/',
+            objectName = 'Parametre/';
+
+    function getUrl() {
+        return Backand.getApiUrl() + baseUrl + objectName;
+    }
+
+    function getUrlForId(id) {
+        return getUrl() + id;
+    }
+
+    service.all = function () {
+        return $http.get(getUrl());
+    };
+});

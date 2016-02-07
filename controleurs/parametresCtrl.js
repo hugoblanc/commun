@@ -10,6 +10,7 @@ app.controller('parametresCtrl', function (ServiceLogin, $scope, $state, $rootSc
     function init() {
         $scope.user = $rootScope.user;
         $scope.changeMDP = false;
+
     }
 
     $scope.changePassword = function () {

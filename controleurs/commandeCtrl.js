@@ -2,7 +2,8 @@ app.controller('CommandeCtrl', function ($scope,
                                          $q,
                                          $state,
                                          $rootScope,
-                                         CommandeService) {
+                                         CommandeService,
+                                           CommandeParamService) {
 
 
   $scope.commande = {};
@@ -17,6 +18,14 @@ app.controller('CommandeCtrl', function ($scope,
   if ($rootScope.user.commande.plats.prix == undefined) {
     $rootScope.user.commande.plats.prix = 0;
   }
+
+  autorisationCommander();
+
+  //Gestion de l'autorisation a commander
+  $scope.autorise = {};
+  $scope.autorise.autoriseToCommande = true;
+  $scope.autorise.color = "button-balanced";
+  $scope.autorise.message = "";
 
 
   function classes(type) {
@@ -40,6 +49,7 @@ app.controller('CommandeCtrl', function ($scope,
       return {'isSelected': false};
     }
 
+
   }
 
 
@@ -52,6 +62,46 @@ app.controller('CommandeCtrl', function ($scope,
   //         return { 'boissonSelected': true };
 
   //     }
+
+    function autorisationCommander(){ // utilis� pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
+        CommandeParamService.all().then(function(resultParamOnline){
+            $scope.autorise.autoriseToCommande = resultParamOnline.data.data[0].accesCommander;
+            $scope.autorise.message = resultParamOnline.data.data[0].message;
+
+            if($rootScope.user.nbCmdSignaler > 3){
+                $scope.autorise.autoriseToCommande = false;
+                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, tu pensais nous niquer ? Viens au bde pour en parler :) ";
+            }
+
+            if($scope.autorise.autoriseToCommande)
+                $scope.autorise.color = "button-balanced";
+            else
+                $scope.autorise.color = "button-dark";
+
+
+        }, function(error){
+            console.log("we are out brah");
+
+            if($rootScope.user.nbCmdSignaler > 3){
+                $scope.autorise.autoriseToCommande = false;
+                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, viens voir les BDE pour en parler";
+            }
+
+            if($scope.autorise.autoriseToCommande)
+                $scope.autorise.color = "button-balanced";
+            else
+                $scope.autorise.color = "button-dark";
+
+
+
+        });
+
+
+        if($rootScope.user.nbCmdSignaler > 3){
+
+        }
+    }
+
 
 
   // };
@@ -134,7 +184,6 @@ app.controller('CommandeCtrl', function ($scope,
         }
       }
 
-
       envoiCommande($rootScope.user.commande);
 
       //si la commande a été créer par un admin dans l'onglet admin
@@ -149,7 +198,6 @@ app.controller('CommandeCtrl', function ($scope,
     else {
       $scope.showMessage("Vous ne pouvez pas faire une commande vide", false);
     }
-
   }
 
   function annuler() {
