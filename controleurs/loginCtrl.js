@@ -20,14 +20,9 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     // function login (user, $scope){
     function login(user) {
         $scope.isLoading = true;
-        if (('' + user.pseudo).length < 4 || ('' + user.mdp).length < 4) {
-            if (('' + user.pseudo).length < 4)
-                $scope.lblPseudo = true;
-            if (('' + user.mdp).length < 6)
-                $scope.lblMdp = true;
-
+        if (checkField(user)) {
+            console.log("pseudo ou mdp trop court ");
             $scope.isLoading = false;
-
         } else {
             //connexion 
             //if(!$scope.isLoading)
@@ -125,6 +120,23 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     function checkEmail(email) {
         return true;
         //return email.substr(email.length - 7) === "@cpe.fr";
+    }
+
+    function checkField(user){//Vérification si un des champs < 8 et 6
+        if(user.pseudo.length >= 6){
+            $scope.lblPseudo = false;
+        } else {
+            $scope.lblPseudo = true;
+        }
+        if(user.mdp.length >= 7){
+            $scope.lblMdp = false;
+             if(user.pseudo.length >= 6)
+                return false;
+        } 
+        else {
+            $scope.lblMdp = true;
+            return true;
+        }
     }
 
 

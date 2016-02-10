@@ -1,5 +1,5 @@
 
-app.controller('CommandeCtrl', function ($scope,
+app.controller('FavorisCtrl', function ($scope,
         $q,
         $state,
         $rootScope,
@@ -17,34 +17,10 @@ app.controller('CommandeCtrl', function ($scope,
     $scope.autorise.autoriseToCommande = true;
     $scope.autorise.color = "button-balanced";
     $scope.autorise.message = "";
-
-    //Gestion de la commande et du nombre de boisson/desserts/plats
     $scope.commande = {};
-    $scope.user.nbBoisson = 0;
-    $scope.user.nbPlats = 0;
-    $scope.user.nbDesserts = 0;
     $scope.commande.prix = 0.0;
+    $scope.listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
 
-    if ($rootScope.user.commandes != null &&
-            $rootScope.user.commande.boissons.length > 0) {
-        $scope.user.nbBoisson = $rootScope.user.commande.boissons.length;
-    } else {
-        $scope.user.nbBoisson = 0;
-    }
-
-    if ($rootScope.user.commandes != null &&
-            $rootScope.user.commande.desserts.length > 0) {
-        $scope.user.nbDesserts = $rootScope.user.commande.desserts.length;
-    } else {
-        $scope.user.nbDesserts = 0;
-    }
-
-    if ($rootScope.user.commandes != null &&
-            $rootScope.user.commande.plats.length > 0) {
-        $scope.user.nbPlats = $rootScope.user.commande.plats.length;
-    } else {
-        $scope.user.nbPlats = 0;
-    }
 
     function autorisationCommander(){ // utilis� pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
         CommandeParamService.all().then(function(resultParamOnline){
@@ -87,28 +63,8 @@ app.controller('CommandeCtrl', function ($scope,
 
         });
 
-
-        if($rootScope.user.nbCmdSignaler > 3){
-
-        }
     }
 
-
-
-
-    //J'ai transféré ce code dans la page précédente (menu) a voir si il faut garder la fonction ou pas ...
-    //Crer en rootScope un objet qui correspond à la commande actuelle
-    function createCommande(userId) {
-        /*******Schema NoSQL*********
-         var newCommande = {
-         "user": userId,
-         "date": (new Date()),
-         "statut": "Non validé"
-         };
-         
-         */
-
-    }
 
 
 
@@ -121,8 +77,9 @@ app.controller('CommandeCtrl', function ($scope,
         if ($rootScope.user.commande.plats.prix > 0)
             $scope.commande.prix = $rootScope.user.commande.plats.prix + $scope.commande.prix;
 
-
     }
+
+    
 
     function envoiCommande(currentCommande) {
         /*Méthode qui envoi les commande à la partie service
@@ -141,12 +98,7 @@ app.controller('CommandeCtrl', function ($scope,
         });
     }
 
-    function changeViewPlats() {
-        if ($rootScope.user.commande.plats.length > 0)
-            $state.go('tab.newplats');
-        else
-            $state.go('tab.plats');
-    }
+
 
     function submit() {
         /*Méthode fixé au bouton valider elle envoi la commande stocké dans la rootScope*/
@@ -162,7 +114,7 @@ app.controller('CommandeCtrl', function ($scope,
                 if(createByAdmin.admin){
                     //envoyer la commande en local
                     $rootScope.newCommande = createByAdmin;
-                    $state.go('tabAdmin.commande');
+                    $state.go('tab.commande');
                 }
                 else{
                     $state.go('tab.menu');
@@ -172,11 +124,7 @@ app.controller('CommandeCtrl', function ($scope,
             var favoris = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
             favoris.push($rootScope.user.commande);
             window.localStorage.setItem("favoris", JSON.stringify(favoris));
-            $rootScope.user.commande.boissons = [];
-            $rootScope.user.commande.plats = [];
-            $rootScope.user.commande.desserts = [];
 
-            $state.go('tab.favoris');
         }
 
 
@@ -191,10 +139,8 @@ app.controller('CommandeCtrl', function ($scope,
         }
     }
 
-    $scope.commande.creerCommande = createCommande($rootScope.user.id); //tranféré dans la page précédente (menu) car plus logique de créer la commande au moment de l'appuie sur "nouvelle commande"
-    $scope.commande.submit = submit; // lors du clique sur le boutton valider
+    //$scope.commande.submit = submit; // lors du clique sur le boutton valider
     $scope.commande.annuler = annuler;
-    $scope.changeViewPlats = changeViewPlats; // Les plats sont complexe a gérer, si non null on va sur une page de gestion si null on va sur la page d'ajout
     //$scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
     $scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope
 
