@@ -27,7 +27,12 @@ app.service('GlobalItems', function ($q, $state, ServiceLogin, $rootScope) {
 
         for (var i = 0; i < tableau.length; i++) {
             if (tableau[i].isChecked) {
+              if(tableau[i].nb != undefined){
+                  actualValue = actualValue + tableau[i].prix * tableau[i].nb;
+              }
+              else {
                 actualValue = actualValue + tableau[i].prix;
+              }
             }
         }
 
@@ -41,19 +46,19 @@ app.service('GlobalItems', function ($q, $state, ServiceLogin, $rootScope) {
     };
 
     service.go = function (page) {
-        //si c'est un téléphone 
+        //si c'est un tÃ©lÃ©phone
         if ($rootScope.mobile) {
             $state.go(page);
-        } 
+        }
         else {
-            //si un ordi souhaite accéder a une page mobile, on le redirige
+            //si un ordi souhaite accÃ©der a une page mobile, on le redirige
             if (page.substring(0, 4) === "tab.") {
                 $state.go('tabO.' + page.substring(4, page.length));
                 return;
             }
 
 
-            //si l'utilisateur veut accéder aux pages Admin, on verifie qu'il est admin
+            //si l'utilisateur veut accÃ©der aux pages Admin, on verifie qu'il est admin
             if (page.substring(0, 8) === "tabAdmin") {
                 ServiceLogin.getUserDetails()
                         .then(function (user) {

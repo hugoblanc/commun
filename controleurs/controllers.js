@@ -11,6 +11,6 @@ angular.module('starter.controllers', ["ui.router", ])
 
 
 .controller('AccountCtrl', function($scope) {
-
+    
 });
 
