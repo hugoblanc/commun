@@ -1,21 +1,12 @@
 app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $rootScope, GlobalItems) {
-    $scope.lblPseudo = false;
-    $scope.lblMdp = false;
-    $scope.error = "";
-    $scope.filiere = "CGP";
-    $scope.annee = "3";
-    $scope.vue = {};
-    $scope.vue.isCreate = true;
-    $scope.vue.text = "S'identifier";
-    $scope.isLoading = false;
-    var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
-
-
-    if(localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0){
-        login(localUser);
-    }
-        
-
+  $scope.user = {};
+  $scope.user.filiere = "CGP";
+  $scope.user.annee = "3";
+  $scope.vue = {};
+  $scope.vue.isCreate = true;
+  $scope.vue.text = "S'identifier";
+  $scope.isLoading = false;
+  var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
 
     // function login (user, $scope){
     function login(user) {
@@ -39,26 +30,45 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
 
                                 //currentUser.token = result.access_token;
 
-                                //recup�rer les infos du user
+                                //recupérer les infos du user
                                 ServiceLogin.getUserInfos(result.username).then(function (result) {
-                                    //si on a r�cup�rer l'id
+                                    //si on a récupérer l'id
                                     $scope.erreur = "";
                                     //stocker l'id
-                                    currentUser.id =  result.data[0].id;
-                                    currentUser.filiere =  result.data[0].filiere;
-                                    currentUser.annee =  result.data[0].annee;
-                                    currentUser.nbCmdSignaler = result.data[0].nbCmdSignaler;
+
+
+                                    var user = result.data.data[0];
+                                    //stockage des infos
+                                    currentUser.id = user.id;
+                                    currentUser.filiere = user.filiere;
+                                    currentUser.annee = user.annee;
+                                    currentUser.firstName = user.firstName;
+                                    currentUser.lastName = user.lastName;
+                                    currentUser.nbCmdSignaler = user.nbCmdSignaler;
+
                                     //mettre l'objet currentUser en local
                                     window.localStorage.setItem("currentUser", JSON.stringify(currentUser));
-                                    $rootScope.user.filiere = currentUser.filiere;
-                                    $rootScope.user.role = currentUser.role;
-                                    $rootScope.user.annee = currentUser.annee;
+                                    $rootScope.user = {};
                                     $rootScope.user.id = currentUser.id;
+                                    $rootScope.user.role = currentUser.role;
+                                    $rootScope.user.filiere = currentUser.filiere;
+                                    $rootScope.user.annee = currentUser.annee;
+                                    $rootScope.user.email = currentUser.username;
+                                    $rootScope.user.firstName = currentUser.firstName;
+                                    $rootScope.user.lastName = currentUser.lastName;
+                                    $rootScope.user.commande = {
+                                      "plats": [],
+                                      "boissons": [],
+                                      "desserts": [],
+                                      "statut": "Non validé",
+                                      "date": (new Date())
+                                    };
                                     $rootScope.user.nbCmdSignaler = currentUser.nbCmdSignaler;
 
                                     $scope.isLoading = false;
-                                    //si l'utilisateur a essayer d'acceder a une page sans �tre connecter
+                                    //si l'utilisateur a essayer d'acceder a une page sans être connecter
                                     //on le redirige vers la page
+
                                     if($rootScope.redirect != null){
                                         $state.go($rootScope.redirect);
                                     }
@@ -67,62 +77,70 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
                                         $state.go('tab.accueil'); 
                                         $rootScope.$state = "";
                                     }
-////                                 window.localStorage.setItem("token", JSON.stringify(result));                                  
-                                }, function (data) {
-                                    $scope.erreur = "Erreur de connexion � la base";
+                                    }, function (data) {
+                                      $scope.showMessage("Erreur de connexion à la base", false);
+                                      $scope.isLoading = false;
+                                    });
+                                  },
+                                  function (data) {
                                     $scope.isLoading = false;
-                                });
-                            },
-                            function (data) {
-                                $scope.isLoading =false;
-                                if (data.error === "invalid_grant") {
-                                    $scope.error = "Email ou mot de passe incorrect";
-                                } else {
-                                    $scope.error = "Erreur inconnu, veuillez r�essayer plus tard";
-                                }
+                                    if (data.error === "invalid_grant") {
+                                      $scope.$parent.showMessage("Email ou mot de passe incorrect", false);
+                                      $scope.error = "Email ou mot de passe incorrect";
+                                    } else {
+                                      $scope.showMessage("Erreur inconnu, veuillez réessayer plus tard", false);
+                                      $scope.error = "Erreur inconnu, veuillez réessayer plus tard";
+                                    }
 
-                                console.log(data);
+                                    console.log(data);
+                                  }
+                                );
                             }
-                    );
+                          }
+
+
+
+
+
+  //Sign up to Backand
+  function signup(user) {
+    if (!checkEmail(user.email)) {
+      $scope.$parent.showMessage("Email invalide, vous devez rentrer un email de CPE", false);
+
+      return;
+    }
+    if (user.mdp !== user.mdp2) {
+      $scope.$parent.showMessage("Les mots de passes sont diffÃ©rents", false);
+      return;
+    }
+
+    return Backand.signup(user.firstName, user.lastName, user.email,
+      user.mdp, user.mdp2, {filiere: user.filiere, annee: user.annee}
+    ).then(function (response) {
+        //$rootScope.user.id = $scope.getUserId(user.pseudo);
+        $scope.showMessage("Inscription rÃ©ussit", true);
+        $state.go('verifEmail');
+
+        $scope.isLoading = false;
+
+      },
+      function (data) {
+        //si le user est dÃ©jÃ  crï¿½Ã©er
+        if (data.status === 406) {
+          $scope.showMessage("Adresse Email dÃ©jÃ  utilisÃ©e", false);
+        } else {
+          $scope.showMessage(data.data.error_description, false);
         }
-    }
+        $scope.isLoading = false;
+        console.log(data);
+      });
+  }
 
+  function checkEmail(email) {
+    return email.substr(email.length - 7) === "@cpe.fr";
+  }
 
-    //Sign up to Backand
-    function signup(form) {
-        //$scope.isLoading = true;
-
-        if (!checkEmail(form.email) && !isLoading) {
-            $scope.error = "Email invalide, vous devez rentrer un email de CPE.";
-            return;
-        }
-        return Backand.signup(form.firstName,
-                                form.lastName,
-                                form.email,
-                                form.password,
-                                form.confirmPassword,
-                                {filiere: form.filiere, annee: form.annee})
-                .then(function (response) {
-                    //$rootScope.user.id = $scope.getUserId(user.pseudo);
-                    $scope.error = "";
-                    $state.go('verifEmail');
-
-                    $scope.isLoading = false;
-
-                },
-                        function (data) {
-                            $scope.isLoading = false;
-                            $scope.error = data.data;
-                            console.log(data);
-                        });
-    }
-
-    function checkEmail(email) {
-        return true;
-        //return email.substr(email.length - 7) === "@cpe.fr";
-    }
-
-    function checkField(user){//V�rification si un des champs < 8 et 6
+    function checkField(user){//Vérification si un des champs < 8 et 6
         if(user.pseudo.length >= 6){
             $scope.lblPseudo = false;
         } else {
@@ -140,10 +158,10 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     }
 
 
-    $scope.goToResetPassword = function () {
-        $state.go("resetPassword");
-    };
+  $scope.goToResetPassword = function (){
+    $state.go("resetPassword");
+  };
 
-    $scope.login = login;
-    $scope.signup = signup;
+  $scope.login = login;
+  $scope.signup = signup;
 });

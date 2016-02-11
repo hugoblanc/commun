@@ -105,7 +105,6 @@ app.controller('FavorisCtrl', function ($scope,
 
         $rootScope.user.commande.prix = $scope.commande.prix;
         $rootScope.user.commande.user = $rootScope.user.id;
-        if($rootScope.user.commande.commandeType =="commande"){
             if($scope.autorise.autoriseToCommande){ //Validation uniquement si user autoris�
                 var createByAdmin = $rootScope.user.commande;
                 envoiCommande($rootScope.user.commande);
@@ -120,12 +119,7 @@ app.controller('FavorisCtrl', function ($scope,
                     $state.go('tab.menu');
                 }
             }
-        } else if ($rootScope.user.commande.commandeType =="favoris"){
-            var favoris = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
-            favoris.push($rootScope.user.commande);
-            window.localStorage.setItem("favoris", JSON.stringify(favoris));
 
-        }
 
 
     }
@@ -139,7 +133,7 @@ app.controller('FavorisCtrl', function ($scope,
         }
     }
 
-    //$scope.commande.submit = submit; // lors du clique sur le boutton valider
+    $scope.commande.submit = submit; // lors du clique sur le boutton valider
     $scope.commande.annuler = annuler;
     //$scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
     $scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope
