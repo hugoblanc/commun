@@ -62,7 +62,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
               $rootScope.user.role = currentUser.role;
               $rootScope.user.filiere = currentUser.filiere;
               $rootScope.user.annee = currentUser.annee;
-              $rootScope.user.email = currentUser.username;
+              $rootScope.user.email = currentUser.email;
               $rootScope.user.firstName = currentUser.firstName;
               $rootScope.user.lastName = currentUser.lastName;
               $rootScope.user.commande = {
