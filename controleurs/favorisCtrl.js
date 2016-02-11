@@ -18,7 +18,7 @@ app.controller('FavorisCtrl', function ($scope,
     $scope.autorise.color = "button-balanced";
     $scope.autorise.message = "";
     $scope.commande = {};
-    $scope.commande.prix = 0.0;
+    $scope.commande.id = null;
     $scope.listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
 
 
@@ -93,7 +93,6 @@ app.controller('FavorisCtrl', function ($scope,
         CommandeService.createCommande(currentCommande).then(function (resultCommande) {/*Si l'envoi dans la base c'est bien passÃ© 
          alors on envoi le reste (boissons, desserts, plats)*/
             $rootScope.user.commande.id = resultCommande.data.__metadata.id;
-            $rootScope.user.commandes.push($rootScope.user.commande);
             $rootScope.user.commande = {"plats": [], "boissons": [], "desserts": [], "statut": "Non validÃ©", "date": (new Date())};
         });
     }
@@ -107,7 +106,7 @@ app.controller('FavorisCtrl', function ($scope,
         $rootScope.user.commande.user = $rootScope.user.id;
             if($scope.autorise.autoriseToCommande){ //Validation uniquement si user autorisé
                 var createByAdmin = $rootScope.user.commande;
-                envoiCommande($rootScope.user.commande);
+                envoiCommande($scope.listeCommandes[$scope.commande.id]);
                 
                 //si la commande a été créer par un admin dans l'onglet admin
                 if(createByAdmin.admin){

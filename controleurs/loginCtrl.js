@@ -9,9 +9,9 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
   var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
 
 
-//    if (localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0) {
-//        login(localUser);
-//    }
+   if (localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0) {
+       login(localUser);
+   }
 
   // function login (user, $scope){
   function login(user) {
