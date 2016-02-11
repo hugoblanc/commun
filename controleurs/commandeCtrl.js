@@ -47,42 +47,47 @@ app.controller('CommandeCtrl', function ($scope,
   //     }
 
     function autorisationCommander(){ // utilis� pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
-        CommandeParamService.all().then(function(resultParamOnline){
-            $scope.autorise.autoriseToCommande = resultParamOnline.data.data[0].accesCommander;
-            $scope.autorise.message = resultParamOnline.data.data[0].message;
+        if($rootScope.user.commande.commandeType == "commande"){
+            CommandeParamService.all().then(function(resultParamOnline){
+                $scope.autorise.autoriseToCommande = resultParamOnline.data.data[0].accesCommander;
+                $scope.autorise.message = resultParamOnline.data.data[0].message;
 
+                checkNbCommandeSignal()
+
+
+            }, function(error){
+                console.log("we are out brah");
+                checkNbCommandeSignal()
+            });
+
+        } else {
             if($rootScope.user.nbCmdSignaler > 3){
-                $scope.autorise.autoriseToCommande = false;
-                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, tu pensais nous niquer ? Viens au bde pour en parler :) ";
+                checkNbCommandeSignal();
             }
-
-            if($scope.autorise.autoriseToCommande)
-                $scope.autorise.color = "button-balanced";
-            else
-                $scope.autorise.color = "button-dark";
-
-
-        }, function(error){
-            console.log("we are out brah");
-
-            if($rootScope.user.nbCmdSignaler > 3){
-                $scope.autorise.autoriseToCommande = false;
-                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, viens voir les BDE pour en parler";
-            }
-
-            if($scope.autorise.autoriseToCommande)
-                $scope.autorise.color = "button-balanced";
-            else
-                $scope.autorise.color = "button-dark";
-
-
-
-        });
-
-
-        if($rootScope.user.nbCmdSignaler > 3){
-
         }
+
+
+
+    }
+
+    function checkNbCommandeSignal(paramsBase){
+        if($rootScope.user.nbCmdSignaler > 1){
+            $scope.autorise.message = "Tu n'es pas venu chercher ta commande 1 fois, fais attention, à trois tu ne pourra plus rien commander !";
+        }
+
+        if($rootScope.user.nbCmdSignaler > 2){
+            $scope.autorise.message = "Tu n'es pas venu chercher ta commande 2 fois dernière chance";
+        }
+        if($rootScope.user.nbCmdSignaler > 3){
+            $scope.autorise.autoriseToCommande = false;
+            $scope.autorise.message = "Tu n'es pas venu chercher ta commande 3 fois de suite, tu pensais nous niquer ? Viens au BDE pour en parler";
+        }
+
+
+        if($scope.autorise.autoriseToCommande)
+            $scope.autorise.color = "button-balanced";
+        else
+            $scope.autorise.color = "button-dark";
     }
 
 
@@ -109,6 +114,7 @@ app.controller('CommandeCtrl', function ($scope,
      -dessert
      */
 
+     if($rootScope.user.commande.commandeType == "commande"){
     CommandeService.createCommande(currentCommande)
       .then(function (resultCommande) {/*Si l'envoi dans la base c'est bien passé
        alors on envoi le reste (boissons, desserts, plats)*/
@@ -118,35 +124,56 @@ app.controller('CommandeCtrl', function ($scope,
       }, function () {
         $scope.showMessage("Erreur de connexion a la base", false);
       });
+    } else {
+        var listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
+        listeCommandes.push(currentCommande);
+        window.localStorage.setItem("favoris", JSON.stringify(listeCommandes));
+    }
+  }
+
+    function envoiFavoris(currentCommande) {
+
+        //Ajout d'un favoris dans le local storage
+
+        var listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
+        listeCommandes.push(currentCommande);
+        window.localStorage.setItem("favoris", JSON.stringify(listeCommandes));
   }
 
   function submit() {
     /*Méthode fixé au bouton valider elle envoi la commande stocké dans la rootScope*/
+
     if (!commandeIsEmpty()) {
-      $rootScope.user.commande.prix = $scope.commande.prix;
-      $rootScope.user.commande.user = $rootScope.user.id;
-      var createByAdmin = $rootScope.user.commande;
 
-      var tabs = ["plats", "boissons", "desserts"];
-      for (var i = 0; i < tabs.length; i++) {
-        var length = $rootScope.user.commande[tabs[i]].length;
-        for (var j = 0; j < length; j++) {
-          for(k = 0; k< $rootScope.user.commande[tabs[i]][k].nb -1 ; k++){
-            $rootScope.user.commande[tabs[i]].push($rootScope.user.commande[tabs[i]][k]);
+        if($rootScope.user.commande.commandeType == "commande"){
+          $rootScope.user.commande.prix = $scope.commande.prix;
+          $rootScope.user.commande.user = $rootScope.user.id;
+          var createByAdmin = $rootScope.user.commande;
+
+          var tabs = ["plats", "boissons", "desserts"];
+          for (var i = 0; i < tabs.length; i++) {
+            var length = $rootScope.user.commande[tabs[i]].length;
+            for (var j = 0; j < length; j++) {
+              for(k = 0; k< $rootScope.user.commande[tabs[i]][k].nb -1 ; k++){
+                $rootScope.user.commande[tabs[i]].push($rootScope.user.commande[tabs[i]][k]);
+              }
+            }
           }
+
+          envoiCommande($rootScope.user.commande);
+
+          //si la commande a été créer par un admin dans l'onglet admin
+          if (createByAdmin.admin) {
+            //envoyer la commande en local
+            $rootScope.newCommande = createByAdmin;
+            $state.go('tabAdmin.commande');
+          } else {
+            $state.go('tab.menu');
+          }
+        } else {
+            envoiFavoris($rootScope.user.commande);
+            $state.go('tab.favoris');
         }
-      }
-
-      envoiCommande($rootScope.user.commande);
-
-      //si la commande a été créer par un admin dans l'onglet admin
-      if (createByAdmin.admin) {
-        //envoyer la commande en local
-        $rootScope.newCommande = createByAdmin;
-        $state.go('tabAdmin.commande');
-      } else {
-        $state.go('tab.menu');
-      }
     }
     else {
       $scope.showMessage("Vous ne pouvez pas faire une commande vide", false);
