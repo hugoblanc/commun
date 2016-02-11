@@ -114,7 +114,6 @@ app.controller('CommandeCtrl', function ($scope,
      -dessert
      */
 
-     if($rootScope.user.commande.commandeType == "commande"){
     CommandeService.createCommande(currentCommande)
       .then(function (resultCommande) {/*Si l'envoi dans la base c'est bien passé
        alors on envoi le reste (boissons, desserts, plats)*/
@@ -124,18 +123,13 @@ app.controller('CommandeCtrl', function ($scope,
       }, function () {
         $scope.showMessage("Erreur de connexion a la base", false);
       });
-    } else {
-        var listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
-        listeCommandes.push(currentCommande);
-        window.localStorage.setItem("favoris", JSON.stringify(listeCommandes));
     }
-  }
 
     function envoiFavoris(currentCommande) {
 
         //Ajout d'un favoris dans le local storage
 
-        var listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
+        var listeCommandes = JSON.parse(window.localStorage.getItem("favoris")) || [];
         listeCommandes.push(currentCommande);
         window.localStorage.setItem("favoris", JSON.stringify(listeCommandes));
   }

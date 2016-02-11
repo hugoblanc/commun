@@ -19,7 +19,7 @@ app.controller('FavorisCtrl', function ($scope,
     $scope.autorise.message = "";
     $scope.commande = {};
     $scope.commande.id = null;
-    $scope.listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
+    $scope.listeCommandes = JSON.parse(window.localStorage.getItem("favoris")) || [];
 
 
     function autorisationCommander(){ // utilisé pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
