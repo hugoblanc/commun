@@ -28,29 +28,12 @@ app.controller('CommandeCtrl', function ($scope,
   $scope.autorise.message = "";
 
 
-  function classes(type) {
-    if ($rootScope.user.commande.boissons.nb > 0 &&
-      type == "boisson") {
-      $scope.user.nbBoisson = $rootScope.user.commande.boissons.nb;
-      return {'isSelected': true};
-    }
 
-    if ($rootScope.user.commande.desserts.nb > 0 &&
-      type == "dessert") {
-      $scope.user.nbDesserts = $rootScope.user.commande.desserts.nb;
-      return {'isSelected': true};
-    }
+  $scope.user.nbBoisson = $rootScope.user.commande.boissons.nb;
 
-    if ($rootScope.user.commande.plats.nb > 0 &&
-      type == "plat") {
-      $scope.user.nbPlats = $rootScope.user.commande.plats.nb;
-      return {'isSelected': true};
-    } else {
-      return {'isSelected': false};
-    }
+  $scope.user.nbDesserts = $rootScope.user.commande.desserts.nb;
 
-
-  }
+  $scope.user.nbPlats = $rootScope.user.commande.plats.nb;
 
 
   // function classes() {
@@ -103,36 +86,6 @@ app.controller('CommandeCtrl', function ($scope,
     }
 
 
-
-  // };
-
-
-  //J'ai transféré ce code dans la page précédente (menu) a voir si il faut garder la fonction ou pas ...
-  //Crer en rootScope un objet qui correspond à la commande actuelle
-  function createCommande(userId) {
-    /*******Schema NoSQL*********
-     var newCommande = {
-         "user": userId,
-         "date": (new Date()),
-         "statut": "Non validé"
-         };
-
-     */
-
-  }
-
-  //Préparer la commande anvant l'envoi en base (check quoi envoyer)
-  // function preparCommande(){
-  // 	var currentCommande = $rootScope.user.commandes[$rootScope.user.currentCommande];
-
-  // 		var newCommande = {
-  // 		"user": $rootScope.user.id,
-  // 		"date": currentCommande.date,
-  // 		"statut": "Envoyé"
-  // 	};
-  // 	return currentCommande;
-
-  // }
 
 
   $scope.updateCommandePrice = function () {
@@ -198,6 +151,7 @@ app.controller('CommandeCtrl', function ($scope,
     else {
       $scope.showMessage("Vous ne pouvez pas faire une commande vide", false);
     }
+
   }
 
   function annuler() {
@@ -276,11 +230,9 @@ app.controller('CommandeCtrl', function ($scope,
 
   };
 
-  $scope.commande.creerCommande = createCommande($rootScope.user.id); //tranféré dans la page précédente (menu) car plus logique de créer la commande au moment de l'appuie sur "nouvelle commande"
   $scope.commande.submit = submit; // lors du clique sur le boutton valider
   $scope.commande.annuler = annuler;
   $scope.changeViewPlats = changeViewPlats; // Les plats sont complexe a gérer, si non null on va sur une page de gestion si null on va sur la page d'ajout
-  $scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
   //$scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope
   $scope.updateCommandePrice();
   //gestion des vue pour ordinateur

@@ -13,18 +13,12 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
 //        login(localUser);
 //    }
 
-
   // function login (user, $scope){
   function login(user) {
     $scope.isLoading = true;
-    if (('' + user.pseudo).length < 4 || ('' + user.mdp).length < 4) {
-      if (('' + user.pseudo).length < 4)
-        $scope.showMessage("Veuillez entrer un email valide !", false);
-      if (('' + user.mdp).length < 6)
-        $scope.showMessage("Veuillez entrer un mot de passe valide !", false);
-
+    if (checkField(user)) {
+      console.log("pseudo ou mdp trop court ");
       $scope.isLoading = false;
-
     } else {
       //connexion
       //if(!$scope.isLoading)
@@ -35,16 +29,18 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
             currentUser = {};
             currentUser.fullName = result.fullName;
             currentUser.role = result.role;
-            currentUser.email = result.username;
+            currentUser.username = result.username;
 
-            if ($rootScope.app == true) {
-              window.localStorage.setItem("infoConnexion", JSON.stringify(user));
-            }
+            window.localStorage.setItem("infoConnexion", JSON.stringify(user));
 
             //currentUser.token = result.access_token;
 
             //recupérer les infos du user
             ServiceLogin.getUserInfos(result.username).then(function (result) {
+              //si on a récupérer l'id
+              $scope.erreur = "";
+              //stocker l'id
+
 
               var user = result.data.data[0];
               //stockage des infos
@@ -62,7 +58,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
               $rootScope.user.role = currentUser.role;
               $rootScope.user.filiere = currentUser.filiere;
               $rootScope.user.annee = currentUser.annee;
-              $rootScope.user.email = currentUser.email;
+              $rootScope.user.email = currentUser.username;
               $rootScope.user.firstName = currentUser.firstName;
               $rootScope.user.lastName = currentUser.lastName;
               $rootScope.user.commande = {
@@ -75,12 +71,13 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
               $rootScope.user.nbCmdSignaler = currentUser.nbCmdSignaler;
 
               $scope.isLoading = false;
-
-              //si l'utilisateur a essayer d'acceder a une page sans �tre connecter
+              //si l'utilisateur a essayer d'acceder a une page sans être connecter
               //on le redirige vers la page
+
               if ($rootScope.redirect != null) {
                 $state.go($rootScope.redirect);
-              } else {
+              }
+              else {
                 //aller a la page tab.acceuil
                 $state.go('tab.accueil');
                 $rootScope.$state = "";
@@ -94,8 +91,10 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
             $scope.isLoading = false;
             if (data.error === "invalid_grant") {
               $scope.$parent.showMessage("Email ou mot de passe incorrect", false);
+              $scope.error = "Email ou mot de passe incorrect";
             } else {
               $scope.showMessage("Erreur inconnu, veuillez réessayer plus tard", false);
+              $scope.error = "Erreur inconnu, veuillez réessayer plus tard";
             }
 
             console.log(data);
@@ -113,7 +112,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       return;
     }
     if (user.mdp !== user.mdp2) {
-      $scope.$parent.showMessage("Les mots de passes sont différents", false);
+      $scope.$parent.showMessage("Les mots de passes sont diffÃ©rents", false);
       return;
     }
 
@@ -121,16 +120,16 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       user.mdp, user.mdp2, {filiere: user.filiere, annee: user.annee}
     ).then(function (response) {
         //$rootScope.user.id = $scope.getUserId(user.pseudo);
-        $scope.showMessage("Inscription réussit", true);
+        $scope.showMessage("Inscription rÃ©ussit", true);
         $state.go('verifEmail');
 
         $scope.isLoading = false;
 
       },
       function (data) {
-        //si le user est déjà cr�éer
+        //si le user est dÃ©jÃ  crï¿½Ã©er
         if (data.status === 406) {
-          $scope.showMessage("Adresse Email déjà utilisée", false);
+          $scope.showMessage("Adresse Email dÃ©jÃ  utilisÃ©e", false);
         } else {
           $scope.showMessage(data.data.error_description, false);
         }
@@ -141,6 +140,23 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
 
   function checkEmail(email) {
     return email.substr(email.length - 7) === "@cpe.fr";
+  }
+
+  function checkField(user) {//Vérification si un des champs < 8 et 6
+    if (user.pseudo.length >= 6) {
+      $scope.lblPseudo = false;
+    } else {
+      $scope.lblPseudo = true;
+    }
+    if (user.mdp.length >= 7) {
+      $scope.lblMdp = false;
+      if (user.pseudo.length >= 6)
+        return false;
+    }
+    else {
+      $scope.lblMdp = true;
+      return true;
+    }
   }
 
 

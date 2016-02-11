@@ -3,10 +3,19 @@ app.controller('MenuCtrl', function ($scope, $state, $rootScope, CommandeService
 
 
 
-    $scope.nouvelleCommande = function () {
-        $rootScope.user.commande = {"plats": [], "boissons": [], "desserts": [], "statut": "Non validé", "date": (new Date())};
+    $scope.nouvelleCommande = function (type) {
+        $rootScope.user.commande = {"plats": [],
+                                    "boissons": [],
+                                    "desserts": [],
+                                    "statut": "Non validé",
+                                    "date": (new Date()), "commandeType": type};
         //Et on navigue vers la page souhaité
-        $state.go('tab.commande');
+        if(type=="commande"){
+            $state.go('tab.commande');
+        } else if (type == "favoris") {
+            $state.go('tab.favoris');
+        }
+        
     };
 
 
@@ -27,7 +36,7 @@ app.controller('MenuCtrl', function ($scope, $state, $rootScope, CommandeService
         return informationCommande;
     }
 
-    function getUserCommandes() {
+   function getUserCommandes() {
         CommandeService.getUserCommandes($rootScope.user.id)
                 .then(function (result) {
                     $scope.commandes = [];
@@ -43,6 +52,7 @@ app.controller('MenuCtrl', function ($scope, $state, $rootScope, CommandeService
                             $scope.showMessage("Impossible de chargé vos commandes", false);
                         });
     }
+
 
     $scope.displayInformation = displayInformation;
     $scope.getUserCommandes = getUserCommandes();

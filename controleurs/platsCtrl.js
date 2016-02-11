@@ -25,9 +25,7 @@ app.controller('PlatsCtrl', function ($scope,
           }
         }
       }
-
     }
-
   }
 
 
