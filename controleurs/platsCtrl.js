@@ -104,7 +104,7 @@ app.controller('PlatsCtrl', function ($scope,
     updatePrixAndNb();
 
     if ($rootScope.ordi) {
-      $scope.$parent.buttonValiderOrdi(2);
+      $scope.submitAlimentOrdi("plats", $rootScope.user.commande.plats.nb);
     } else {
       $state.go('tab.commande');
     }
@@ -121,10 +121,16 @@ app.controller('PlatsCtrl', function ($scope,
   }
 
   function removePlatsPrepare() {
+    var temp = [];
     for (var i = 0; i < $rootScope.user.commande.plats.length; i++) {
-      if ($rootScope.user.commande.plats[i].type == "platsPrep") {
-        $rootScope.user.commande.plats.splice(i, 1);
+      if ($rootScope.user.commande.plats[i].type == "sandwich") {
+        temp.push($rootScope.user.commande.plats[i]);
       }
+    }
+    $rootScope.user.commande.plats = [];
+
+    for (var i = 0; i < temp.length; i++) {
+      $rootScope.user.commande.plats.push(temp[i]);
     }
   }
 

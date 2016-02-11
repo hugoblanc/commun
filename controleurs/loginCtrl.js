@@ -108,11 +108,14 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
   function signup(user) {
     if (!checkEmail(user.email)) {
       $scope.$parent.showMessage("Email invalide, vous devez rentrer un email de CPE", false);
-
+      return;
+    }
+    if(user.mdp < 7 ){
+      $scope.showMessage("Mot de passe trop court", false);
       return;
     }
     if (user.mdp !== user.mdp2) {
-      $scope.$parent.showMessage("Les mots de passes sont diffÃ©rents", false);
+      $scope.$parent.showMessage("Les mots de passes sont différents", false);
       return;
     }
 
@@ -120,7 +123,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       user.mdp, user.mdp2, {filiere: user.filiere, annee: user.annee}
     ).then(function (response) {
         //$rootScope.user.id = $scope.getUserId(user.pseudo);
-        $scope.showMessage("Inscription rÃ©ussit", true);
+        $scope.showMessage("Inscription réussit", true);
         $state.go('verifEmail');
 
         $scope.isLoading = false;
@@ -129,7 +132,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       function (data) {
         //si le user est dÃ©jÃ  crï¿½Ã©er
         if (data.status === 406) {
-          $scope.showMessage("Adresse Email dÃ©jÃ  utilisÃ©e", false);
+          $scope.showMessage("Adresse Email déjà  utilisée", false);
         } else {
           $scope.showMessage(data.data.error_description, false);
         }
@@ -147,6 +150,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       $scope.lblPseudo = false;
     } else {
       $scope.lblPseudo = true;
+      $scope.showMessage("Adresses email non valide", false);
     }
     if (user.mdp.length >= 7) {
       $scope.lblMdp = false;
@@ -155,6 +159,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
     }
     else {
       $scope.lblMdp = true;
+      $scope.showMessage("Mot de passe trop court", false);
       return true;
     }
   }

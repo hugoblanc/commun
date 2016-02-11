@@ -62,7 +62,7 @@ app.controller('BoissonCtrl', function ($scope, GlobalItems, $stateParams, $q, $
     $rootScope.user.commande.boissons.prix = $scope.boisson.currentPrice;
     $rootScope.user.commande.boissons.nb = $scope.nbBoissons;
     if ($rootScope.ordi) {
-      $scope.$parent.buttonValiderOrdi(3);
+      $scope.submitAlimentOrdi("boissons", $scope.nbBoissons);
     } else {
       $state.go('tab.commande');
     }

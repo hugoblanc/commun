@@ -58,7 +58,7 @@ app.controller('DessertCtrl', function ($scope, $q, $stateParams, $state, Desser
     $rootScope.user.commande.desserts.prix = $scope.dessert.currentPrice;
     $rootScope.user.commande.desserts.nb = $scope.nbDesserts;
     if ($rootScope.ordi) {
-      $scope.$parent.buttonValiderOrdi(4);
+      $scope.submitAlimentOrdi("desserts", $scope.nbDesserts);
     } else {
       $state.go('tab.commande');
     }

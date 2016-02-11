@@ -3,7 +3,7 @@ app.controller('CommandeCtrl', function ($scope,
                                          $state,
                                          $rootScope,
                                          CommandeService,
-                                           CommandeParamService) {
+                                         CommandeParamService) {
 
 
   $scope.commande = {};
@@ -14,7 +14,7 @@ app.controller('CommandeCtrl', function ($scope,
 
   //variable pour affichage des commandes sur ordi
   //différent afficher des fenetres
-  $scope.display = 0;
+  $scope.display = "plats";
   if ($rootScope.user.commande.plats.prix == undefined) {
     $rootScope.user.commande.plats.prix = 0;
   }
@@ -26,7 +26,6 @@ app.controller('CommandeCtrl', function ($scope,
   $scope.autorise.autoriseToCommande = true;
   $scope.autorise.color = "button-balanced";
   $scope.autorise.message = "";
-
 
 
   $scope.user.nbBoisson = $rootScope.user.commande.boissons.nb;
@@ -46,46 +45,43 @@ app.controller('CommandeCtrl', function ($scope,
 
   //     }
 
-    function autorisationCommander(){ // utilis� pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
-        CommandeParamService.all().then(function(resultParamOnline){
-            $scope.autorise.autoriseToCommande = resultParamOnline.data.data[0].accesCommander;
-            $scope.autorise.message = resultParamOnline.data.data[0].message;
+  function autorisationCommander() { // utilis� pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
+    CommandeParamService.all().then(function (resultParamOnline) {
+      $scope.autorise.autoriseToCommande = resultParamOnline.data.data[0].accesCommander;
+      $scope.autorise.message = resultParamOnline.data.data[0].message;
 
-            if($rootScope.user.nbCmdSignaler > 3){
-                $scope.autorise.autoriseToCommande = false;
-                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, tu pensais nous niquer ? Viens au bde pour en parler :) ";
-            }
+      if ($rootScope.user.nbCmdSignaler > 3) {
+        $scope.autorise.autoriseToCommande = false;
+        $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, tu pensais nous niquer ? Viens au bde pour en parler :) ";
+      }
 
-            if($scope.autorise.autoriseToCommande)
-                $scope.autorise.color = "button-balanced";
-            else
-                $scope.autorise.color = "button-dark";
-
-
-        }, function(error){
-            console.log("we are out brah");
-
-            if($rootScope.user.nbCmdSignaler > 3){
-                $scope.autorise.autoriseToCommande = false;
-                $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, viens voir les BDE pour en parler";
-            }
-
-            if($scope.autorise.autoriseToCommande)
-                $scope.autorise.color = "button-balanced";
-            else
-                $scope.autorise.color = "button-dark";
+      if ($scope.autorise.autoriseToCommande)
+        $scope.autorise.color = "button-balanced";
+      else
+        $scope.autorise.color = "button-dark";
 
 
+    }, function (error) {
+      console.log("we are out brah");
 
-        });
+      if ($rootScope.user.nbCmdSignaler > 3) {
+        $scope.autorise.autoriseToCommande = false;
+        $scope.autorise.message = "Tu n'est pas venu chercher ta commande 3 fois de suite, viens voir les BDE pour en parler";
+      }
+
+      if ($scope.autorise.autoriseToCommande)
+        $scope.autorise.color = "button-balanced";
+      else
+        $scope.autorise.color = "button-dark";
 
 
-        if($rootScope.user.nbCmdSignaler > 3){
+    });
 
-        }
+
+    if ($rootScope.user.nbCmdSignaler > 3) {
+
     }
-
-
+  }
 
 
   $scope.updateCommandePrice = function () {
@@ -131,7 +127,7 @@ app.controller('CommandeCtrl', function ($scope,
       for (var i = 0; i < tabs.length; i++) {
         var length = $rootScope.user.commande[tabs[i]].length;
         for (var j = 0; j < length; j++) {
-          for(k = 0; k< $rootScope.user.commande[tabs[i]][k].nb -1 ; k++){
+          for (k = 0; k < $rootScope.user.commande[tabs[i]][k].nb - 1; k++) {
             $rootScope.user.commande[tabs[i]].push($rootScope.user.commande[tabs[i]][k]);
           }
         }
@@ -193,8 +189,6 @@ app.controller('CommandeCtrl', function ($scope,
     object.nb += nb;
   };
 
-
-  /////////////////////////////// FONCTION POUR ORDI ///////////////////////////////////
   function changeViewPlats() {
     if ($rootScope.user.commande.plats.length > 0)
       $state.go('tab.newplats');
@@ -202,33 +196,6 @@ app.controller('CommandeCtrl', function ($scope,
       $state.go('tab.plats');
   }
 
-  $scope.displayViewPlats = function () {
-    if ($rootScope.user.commande.plats.length > 0) {
-      $scope.display = 1;
-    } else {
-      $scope.display = 0;
-    }
-  };
-
-  $scope.setDisplay = function (num) {
-    $scope.display = num;
-  };
-
-  function colorButton(num) {
-    if (num <= 1 && this.display <= 1) {
-      return 'button button-full button-balanced';
-    } else if (this.display == num) {
-      return 'button button-full button-balanced';
-    } else {
-      return 'button button-full item';
-    }
-  }
-
-  $scope.buttonValiderOrdi = function (num) {
-    $scope.display = num;
-    $scope.updateCommandePrice();
-
-  };
 
   $scope.commande.submit = submit; // lors du clique sur le boutton valider
   $scope.commande.annuler = annuler;
@@ -237,7 +204,58 @@ app.controller('CommandeCtrl', function ($scope,
   $scope.updateCommandePrice();
   //gestion des vue pour ordinateur
 //    displayViewPlats();
-  $scope.colorButton = colorButton;
+
+
+  /////////////////////////////// FONCTION POUR ORDI ///////////////////////////////////
+
+
+  $scope.displayViewPlats = function () {
+    if ($rootScope.user.commande.plats.length > 0) {
+      $scope.display = 'newPlats';
+    } else {
+      $scope.display = 'plats';
+    }
+  };
+
+  $scope.setDisplay = function (type) {
+    $scope.display = type;
+  };
+
+  $scope.colorButton = function (type) {
+    if(type == "plats" &$scope.display == "newPlats"){
+      return 'button button-full button-balanced';
+    }
+    else if (type == $scope.display) {
+      return 'button button-full button-balanced';
+    } else {
+      return 'button button-full item';
+    }
+  };
+
+  $scope.submitAlimentOrdi = function (type, nb) {
+    $scope.updateCommandePrice();
+    $scope.updateNb(type, nb);
+  };
+
+  $scope.updateNb = function(type, nb){
+    if(type == "plats"){
+      $scope.user.nbPlats = nb;
+      $scope.display = 'boissons';
+    }
+    else if (type == "newPlats"){
+      $scope.user.nbPlats = nb;
+      $scope.display = 'boissons';
+    }
+    else if(type == "boissons"){
+      $scope.user.nbBoisson = nb;
+      $scope.display = 'desserts';
+    }
+    else if(type == "desserts"){
+      $scope.user.nbDesserts = nb;
+      $scope.display = 'recap';
+    }
+
+  };
 
 
 });

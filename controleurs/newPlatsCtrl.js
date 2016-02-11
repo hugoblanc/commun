@@ -19,7 +19,7 @@ app.controller('NewPlatsCtrl', function ($scope, $state, $rootScope, $q, PlatPre
   function addPlat() {
     $rootScope.user.commande.plats = $scope.plats;
     if ($rootScope.ordi) {
-      $scope.$parent.setDisplay(0);
+      $scope.$parent.setDisplay("plats");
     } else {
       $state.go('tab.plats');
     }
@@ -28,7 +28,7 @@ app.controller('NewPlatsCtrl', function ($scope, $state, $rootScope, $q, PlatPre
   function submit() {
     $rootScope.user.commande.plats = $scope.plats;
     if ($rootScope.ordi) {
-      $scope.$parent.buttonValiderOrdi(2);
+        $scope.submitAlimentOrdi("plats", $rootScope.user.commande.plats.nb);
     } else {
       $state.go('tab.commande');
     }
