@@ -68,15 +68,10 @@ app.controller('FavorisCtrl', function ($scope,
 
 
 
-    function updateCommandePrice() {
-        $scope.commande.prix = 0;
-        if ($rootScope.user.commande.desserts.prix > 0)
-            $scope.commande.prix = $rootScope.user.commande.desserts.prix;
-        if ($rootScope.user.commande.boissons.prix > 0)
-            $scope.commande.prix = $rootScope.user.commande.boissons.prix + $scope.commande.prix;
-        if ($rootScope.user.commande.plats.prix > 0)
-            $scope.commande.prix = $rootScope.user.commande.plats.prix + $scope.commande.prix;
-
+    function updateCommande() {
+            var id = $scope.commande.id;
+           $scope.commande =  $scope.listeCommandes[$scope.commande.id];
+           $scope.commande.id = id;
     }
 
     
@@ -135,7 +130,7 @@ app.controller('FavorisCtrl', function ($scope,
     $scope.commande.submit = submit; // lors du clique sur le boutton valider
     $scope.commande.annuler = annuler;
     //$scope.classe = classes; // fonction qui nous donne des infos sur la présence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
-    $scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope
+    $scope.updateCommande = updateCommande; // On actualise le prix de la commande en fonction des tableaux stockés dans le rootscope
 
 
 	
