@@ -8,6 +8,7 @@ app.controller('PlatsCtrl', function ($scope,
 
   $scope.choix = {"sauces": [], "platsPrepares": []}; // Tout les choix possible sont préchargé ici
 
+
   //$scope.plats = {"isSandwich": false, "isPlatPrep": false};
   //$scope.plats.currentPrice = 0;
 

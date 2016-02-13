@@ -4,20 +4,20 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
     function init() {
         //stock les commandes
         $scope.commandes = [[], [], []];
-        
+
         //permet de trier les commandes
         $scope.ordreCommande = {};
         $scope.nbCommande = [0, 0, 0];
-        
+
         //utiliser pour rafraichir
         $scope.lastCommande = 0;
-        
+
         //declencher le rafraichissement des commandes toute les 30 sec
         $timeout(function () {
             refreshCommande();
         }, 30000);
     }
-    
+
     //r�cuperer toutes les commandes
     //appeler a l'affichage de la page
     function getAll() {
@@ -33,10 +33,10 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
                 });
     };
 
-    //stock dans $scope.commandes les d�tails d'une commande mis en param�tres
+    //stock dans $scope.commandes les détails d'une commande mis en paramètres
     function getDetailCommande(commande) {
         //s'il n'y a pas de colonne assigner a la commande on l'a met
-        //a la premi�re
+        //a la première
         if (commande.colonne === null) {
             commande.colonne = 0;
         }
@@ -45,13 +45,13 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
         $scope.nbCommande[commande.colonne]++;
         $scope.lastCommande = commande.id;
 
-        //appeler le service pour recuperer les d�tails
+        //appeler le service pour recuperer les détails
         CommandeService.getCommandesDetail(commande.id)
                 .then(function (result) {
                     if (result.data.colonne === "") {
                         result.data.colonne = 0;
                     }
-                    //si la commande � �t� rentr� par un admin
+                    //si la commande à été rentré par un admin
                     if(result.data.user === ""){
                         result.data.user = {'firstName' : "Local" };
                     }
@@ -62,17 +62,17 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
                 });
     }
 
-    //on passe le status de la commande � prete en ligne et en local
-    $scope.commandePrete = function (commande) { 
-        CommandeService.update(commande.id, {"statut": "pret"})
+    //on passe le status de la commande à prete en ligne et en local
+    $scope.commandePrete = function (commande) {
+        CommandeService.update(commande.id, {"statut": "Prête"})
                 .then(function () {
-                    commande.statut = "pret";
+                    commande.statut = "Prête";
                 }, function (error) {
 
                 });
     };
 
-    //permet d'afficher ou non le d�tail des commandes pour celles pr�tes
+    //permet d'afficher ou non le détail des commandes pour celles prêtes
     $scope.afficherCommande = function (commande, afficher) {
         commande.afficher = afficher;
     };
@@ -95,7 +95,7 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
                 });
     };
 
-    //d�clencher lorsque l'on souhait supprimer une commande sans la valid�
+    //d�clencher lorsque l'on souhait supprimer une commande sans la valider
     $scope.deleteCommande = function (commande) {
         if (confirm('Voulez-vous vraiment supprimer cette commande?')) {
             $scope.validerCommande(commande);
@@ -108,7 +108,7 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
         if (confirm("Etes vous sûr de vouloir signaler que " + commande.user.firstName + " " + commande.user.lastName + " n'a pas récupéré sa commande?")) {
             ServiceLogin.update(commande.user.id, {"nbCmdSignaler": commande.user.nbCmdSignaler + 1})
                     .then(function () {
-                        commande.statut = "pret";
+                        commande.statut = "Prête";
                     }, function (error) {
 
                     });
@@ -133,10 +133,10 @@ app.controller('AdminCommandeCtrl', function ($scope, $state, CommandeService, S
             refreshCommande();
         }, 30000);
     }
-    
+
     $scope.ajouterCommande = function(){
         $rootScope.user.commande = {"plats":[], "boissons": [], "desserts": [], "statut": "Non validé", "date": (new Date()), "admin" : true};
-        $state.go('tabO.commande'); 
+        $state.go('tabO.commande');
     };
 
     //fonction ex�cut�e a l'affichage

@@ -18,8 +18,8 @@ app.controller('FavorisCtrl', function ($scope,
     $scope.autorise.color = "button-balanced";
     $scope.autorise.message = "";
     $scope.commande = {};
-    $scope.commande.prix = 0.0;
-    $scope.listeCommandes = JSON.parse(window.localStorage.getItem("favoris") || []) || [];
+    $scope.commande.id = null;
+    $scope.listeCommandes = JSON.parse(window.localStorage.getItem("favoris")) || [];
 
 
     function autorisationCommander(){ // utilisÈ pour savoir si l'utilisateur peu commander ou non ? et le message a afficher
@@ -68,15 +68,10 @@ app.controller('FavorisCtrl', function ($scope,
 
 
 
-    function updateCommandePrice() {
-        $scope.commande.prix = 0;
-        if ($rootScope.user.commande.desserts.prix > 0)
-            $scope.commande.prix = $rootScope.user.commande.desserts.prix;
-        if ($rootScope.user.commande.boissons.prix > 0)
-            $scope.commande.prix = $rootScope.user.commande.boissons.prix + $scope.commande.prix;
-        if ($rootScope.user.commande.plats.prix > 0)
-            $scope.commande.prix = $rootScope.user.commande.plats.prix + $scope.commande.prix;
-
+    function updateCommande() {
+            var id = $scope.commande.id;
+           $scope.commande =  $scope.listeCommandes[$scope.commande.id];
+           $scope.commande.id = id;
     }
 
     
@@ -93,7 +88,6 @@ app.controller('FavorisCtrl', function ($scope,
         CommandeService.createCommande(currentCommande).then(function (resultCommande) {/*Si l'envoi dans la base c'est bien pass√© 
          alors on envoi le reste (boissons, desserts, plats)*/
             $rootScope.user.commande.id = resultCommande.data.__metadata.id;
-            $rootScope.user.commandes.push($rootScope.user.commande);
             $rootScope.user.commande = {"plats": [], "boissons": [], "desserts": [], "statut": "Non valid√©", "date": (new Date())};
         });
     }
@@ -107,7 +101,7 @@ app.controller('FavorisCtrl', function ($scope,
         $rootScope.user.commande.user = $rootScope.user.id;
             if($scope.autorise.autoriseToCommande){ //Validation uniquement si user autorisÈ
                 var createByAdmin = $rootScope.user.commande;
-                envoiCommande($rootScope.user.commande);
+                envoiCommande($scope.listeCommandes[$scope.commande.id]);
                 
                 //si la commande a ÈtÈ crÈer par un admin dans l'onglet admin
                 if(createByAdmin.admin){
@@ -136,7 +130,7 @@ app.controller('FavorisCtrl', function ($scope,
     $scope.commande.submit = submit; // lors du clique sur le boutton valider
     $scope.commande.annuler = annuler;
     //$scope.classe = classes; // fonction qui nous donne des infos sur la pr√©sence ou non de boissons, desserts et plats pour mettre a jour les infos visible sur la page commande
-    $scope.majCommandePrice = updateCommandePrice(); // On actualise le prix de la commande en fonction des tableaux stock√©s dans le rootscope
+    $scope.updateCommande = updateCommande; // On actualise le prix de la commande en fonction des tableaux stock√©s dans le rootscope
 
 
 	

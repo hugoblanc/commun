@@ -9,9 +9,9 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
   var localUser = JSON.parse(window.localStorage.getItem("infoConnexion") || null) || null;
 
 
-//    if (localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0) {
-//        login(localUser);
-//    }
+   if (localUser != null && localUser != "" && localUser.mdp != undefined && localUser.pseudo != undefined && localUser.mdp.length > 0) {
+       login(localUser);
+   }
 
   // function login (user, $scope){
   function login(user) {
@@ -29,10 +29,11 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
             currentUser = {};
             currentUser.fullName = result.fullName;
             currentUser.role = result.role;
-            currentUser.username = result.username;
+            currentUser.email = result.username;
 
-            window.localStorage.setItem("infoConnexion", JSON.stringify(user));
-
+            if($rootScope.app) {
+              window.localStorage.setItem("infoConnexion", JSON.stringify(user));
+            }
             //currentUser.token = result.access_token;
 
             //recupérer les infos du user
@@ -58,7 +59,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
               $rootScope.user.role = currentUser.role;
               $rootScope.user.filiere = currentUser.filiere;
               $rootScope.user.annee = currentUser.annee;
-              $rootScope.user.email = currentUser.username;
+              $rootScope.user.email = currentUser.email;
               $rootScope.user.firstName = currentUser.firstName;
               $rootScope.user.lastName = currentUser.lastName;
               $rootScope.user.commande = {
@@ -123,7 +124,7 @@ app.controller('LoginCtrl', function (Backand, $scope, $state, ServiceLogin, $ro
       user.mdp, user.mdp2, {filiere: user.filiere, annee: user.annee}
     ).then(function (response) {
         //$rootScope.user.id = $scope.getUserId(user.pseudo);
-        $scope.showMessage("Inscription réussit", true);
+        $scope.showMessage("Inscription réussie", true);
         $state.go('verifEmail');
 
         $scope.isLoading = false;
